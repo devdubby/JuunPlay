@@ -1,5 +1,4 @@
 import { SIGNUP_USER, SET_LOGIN_USER } from "../actions/types";
-import { api } from "../api";
 
 const initialState = {
   id: '',
@@ -9,7 +8,6 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-  console.log('action check:' ,action)
   switch(action.type) {
     case SET_LOGIN_USER:
       return {

@@ -1,15 +1,17 @@
 import { api } from "../api";
-import { SET_LOGIN_USER, SIGNUP_USER } from "./types";
+import { SET_LOGIN_USER } from "./types";
 
 export const loginUser = (email, password) => {
   return dispatch => {
-    api.post("api/auth/login", {
+    return api.post("api/auth/login", {
       email,
       password
-    }).then(res => {
-      const { data } = res;
-      dispatch(setLoginUser(data));
-    });
+    })
+    .then(res => {
+      dispatch(setLoginUser(res.data));
+      return res.data;
+    })
+    .catch(err => err.response.data);
   }
 }
 
@@ -23,10 +25,12 @@ const setLoginUser = ({ id, name, email, jwtToken }) => {
   }
 };
 
-export const signUpUser = async (name, email, password) => {
-  return await api.post("api/auth/register", {
+export const signUpUser = (name, email, password) => (
+  api.post("api/auth/register", {
     name,
     email,
     password
   })
-};
+  .then(res => res.data)
+  .catch(err => err.response.data)
+);

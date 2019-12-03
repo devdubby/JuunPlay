@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 
 const Container = styled.div`
   z-index: 1;
@@ -11,15 +10,15 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   &::after {
-    background-image: url('https://image.tmdb.org/t/p/original/xJWPZIYOEFIjZpBL7SVBGnzRYXp.jpg');
+    background-image: url("https://image.tmdb.org/t/p/original/xJWPZIYOEFIjZpBL7SVBGnzRYXp.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    top:0;
-    left:0;
-    position:absolute;
-    opacity:0.3!important;
-    z-index:-1;
-    content:"";
+    top: 0;
+    left: 0;
+    position: absolute;
+    opacity: 0.3 !important;
+    z-index: -1;
+    content: "";
     width: 100%;
     height: 100vh;
   }
@@ -39,6 +38,8 @@ const Title = styled.span`
   font-weight: 600;
   margin-bottom: 10vh;
 `;
+
+const InputContainer = styled.div``;
 
 const Input = styled.input`
   width: 18vw;
@@ -64,31 +65,97 @@ const Button = styled.button`
   width: 20vw;
   height: 6.5vh;
   position: relative;
+  cursor: pointer;
+  opacity: ${props => (props.isNameValidation && props.isEmailValidation && props.isPasswordValidation ? null : 0.3)};
 `;
 
-const SignUpButton = styled(Link)`
-  background-color: rgba(0, 0, 0, 0.5);
-  font-size: 20px;
-  margin-top: 1em;
-  padding: 0.25em 1em;
-  border: 0.4px solid white;
-  border-radius: 25px;
-  width: 17vw;
-  height: 5.5vh;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const NameValiIcon = styled.i`
+  font-size: 23px;
+  position: absolute;
+  top: 40.6vh;
+  right: 41.5vw;
+  color: ${props => (props.isNameValidation ? "#80d4ff" : "#f92554")};
 `;
 
-const SignUpPresenter = ({ onChange, onSubmit }) => (
+const EmailValiIcon = styled.i`
+  font-size: 23px;
+  position: absolute;
+  top: 48.5vh;
+  right: 41.5vw;
+  color: ${props => (props.isEmailValidation ? "#80d4ff" : "#f92554")};
+`;
+
+const PasswordValiIcon = styled.i`
+  font-size: 23px;
+  position: absolute;
+  top: 56.3vh;
+  right: 41.5vw;
+  color: ${props => (props.isPasswordValidation ? "#80d4ff" : "#f92554")};
+`;
+
+const SignUpPresenter = ({
+  name,
+  email,
+  password,
+  onChange,
+  onSubmit,
+  isEmailValidation,
+  isPasswordValidation,
+  isNameValidation
+}) => (
   <Container>
     <SubmitForm onSubmit={onSubmit}>
       <Title>Junflix</Title>
-      <Input type="text" id="name" placeholder="Name" onChange={onChange} />
-      <Input type="text" id="email" placeholder="Email" onChange={onChange} />
-      <Input type="password" id="password" placeholder="Password" onChange={onChange} />
-      <Button>가입완료</Button>
+      <InputContainer>
+        <Input
+          type="text"
+          id="name"
+          placeholder="Name(2자 이상)"
+          onChange={onChange}
+        />
+        {name && name.length > 0 && (
+          <NameValiIcon
+            isNameValidation={isNameValidation}
+            className={`far ${
+              isNameValidation ? "fa-check-circle" : "fa-times-circle"
+            }`}
+          />
+        )}
+      </InputContainer>
+      <InputContainer>
+        <Input type="text" id="email" placeholder="Email" onChange={onChange} />
+        {email && email.length > 0 && (
+          <EmailValiIcon
+            isEmailValidation={isEmailValidation}
+            className={`far ${
+              isEmailValidation ? "fa-check-circle" : "fa-times-circle"
+            }`}
+          />
+        )}
+      </InputContainer>
+      <InputContainer>
+        <Input
+          type="password"
+          id="password"
+          placeholder="Password(6자 이상)"
+          onChange={onChange}
+        />
+        {password && password.length > 0 && (
+          <PasswordValiIcon
+            isPasswordValidation={isPasswordValidation}
+            className={`far ${
+              isPasswordValidation ? "fa-check-circle" : "fa-times-circle"
+            }`}
+          />
+        )}
+      </InputContainer>
+      <Button
+        isNameValidation={isNameValidation}
+        isEmailValidation={isEmailValidation}
+        isPasswordValidation={isPasswordValidation}
+      >
+        가입완료
+      </Button>
     </SubmitForm>
   </Container>
 );

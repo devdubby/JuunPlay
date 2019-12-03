@@ -3,24 +3,23 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const Container = styled.div`
-  z-index: 1;
   position: relative;
   width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 0px!important;
+  padding-top: 0px !important;
   &::after {
-    background-image: url('https://image.tmdb.org/t/p/original/xJWPZIYOEFIjZpBL7SVBGnzRYXp.jpg');
+    background-image: url("https://image.tmdb.org/t/p/original/xJWPZIYOEFIjZpBL7SVBGnzRYXp.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    top:0;
-    left:0;
-    position:absolute;
-    opacity:0.3!important;
-    z-index:-1;
-    content:"";
+    top: 0;
+    left: 0;
+    position: absolute;
+    opacity: 0.3 !important;
+    z-index: -1;
+    content: "";
     width: 100%;
     height: 100vh;
   }
@@ -41,6 +40,10 @@ const Title = styled.span`
   margin-bottom: 10vh;
 `;
 
+const InputContainer = styled.div`
+  margin-bottom: 1vh;
+`;
+
 const Input = styled.input`
   width: 18vw;
   height: 7vh;
@@ -48,7 +51,6 @@ const Input = styled.input`
   background-color: rgba(0, 0, 0, 0.5);
   border: none;
   border-radius: 14px;
-  margin-bottom: 1vh;
   font-size: 18px;
   padding: 0px 15px;
 `;
@@ -58,13 +60,15 @@ const Button = styled.button`
   color: white;
   background-color: rgba(119, 185, 255, 0.5);
   font-size: 22px;
-  margin-top: 3em;
+  margin-top: 6vh;
   padding: 0.25em 1em;
   border: 0.4px solid white;
   border-radius: 25px;
   width: 20vw;
   height: 6.5vh;
   position: relative;
+  cursor: pointer;
+  opacity: ${props => (props.isEmailValidation && props.isPasswordValidation ? null : 0.3)};
 `;
 
 const SignUpButton = styled(Link)`
@@ -74,21 +78,74 @@ const SignUpButton = styled(Link)`
   padding: 0.25em 1em;
   border: 0.4px solid white;
   border-radius: 25px;
-  width: 17vw;
-  height: 5.5vh;
+  width: 20vw;
+  height: 6.5vh;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
-const LoginPresenter = ({ onChange, onSubmit }) => (
+const EmailValiIcon = styled.i`
+  font-size: 23px;
+  position: absolute;
+  top: 41.4vh;
+  right: 41.5vw;
+  color: ${props => (props.isEmailValidation ? "#80d4ff" : "#f92554")};
+`;
+
+const PasswordValiIcon = styled.i`
+  font-size: 23px;
+  position: absolute;
+  top: 49.3vh;
+  right: 41.5vw;
+  color: ${props => (props.isPasswordValidation ? "#80d4ff" : "#f92554")};
+`;
+
+const LoginPresenter = ({
+  email,
+  password,
+  onChange,
+  onSubmit,
+  isEmailValidation,
+  isPasswordValidation
+}) => (
   <Container>
     <SubmitForm onSubmit={onSubmit}>
       <Title>Junflix</Title>
-      <Input type="text" id="email" placeholder="Email" onChange={onChange} />
-      <Input type="password" id="password" placeholder="Password" onChange={onChange} />
-      <Button>로그인</Button>
+      <InputContainer>
+        <Input 
+          type="text" 
+          id="email" 
+          placeholder="Email" 
+          onChange={onChange} 
+        />
+        {email && email.length > 0 && (
+          <EmailValiIcon
+            isEmailValidation={isEmailValidation}
+            className={`far ${
+              isEmailValidation ? "fa-check-circle" : "fa-times-circle"
+            }`}
+          />
+        )}
+      </InputContainer>
+      <InputContainer>
+        <Input
+          type="password"
+          id="password"
+          placeholder="Password"
+          onChange={onChange}
+        />
+        {password && password.length > 0 && (
+          <PasswordValiIcon
+            isPasswordValidation={isPasswordValidation}
+            className={`far ${
+              isPasswordValidation ? "fa-check-circle" : "fa-times-circle"
+            }`}
+          />
+        )}
+      </InputContainer>
+      <Button isEmailValidation={isEmailValidation} isPasswordValidation={isPasswordValidation}>로그인</Button>
       <SignUpButton to="/signup">회원가입</SignUpButton>
     </SubmitForm>
   </Container>

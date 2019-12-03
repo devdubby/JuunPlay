@@ -1,4 +1,4 @@
-import React, { Compoent } from "react";
+import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 
@@ -14,10 +14,12 @@ const Header = styled.header`
   background-color: rgba(20, 20, 20, 0.8);
   z-index: 10;
   box-shadow: 0px 1px 5px 2px rgba(0, 0, 0, 0.8);
+  padding: 0px 20px;
 `;
 
 const List = styled.ul`
   display: flex;
+  flex: 1;
 `;
 
 const Item = styled.li`
@@ -27,6 +29,13 @@ const Item = styled.li`
   border-bottom: 3px solid
     ${props => (props.current ? "#3498db" : "transparent")};
   transition: border-bottom 0.5s ease-in-out;
+`;
+
+const LogoutDiv = styled.div`
+  width: 80px;
+  height: 50px;
+  text-align: center;
+  border-bottom: 3px solid transparent;
 `;
 
 const SLink = styled(Link)`
@@ -49,9 +58,9 @@ export default withRouter(({location: { pathname }}) => (
       <Item current={pathname === "/search"}>
         <SLink to="/search">Search</SLink>
       </Item>
-      <Item current={pathname === "/search"}>
-        <SLink to="/search">Logout</SLink>
-      </Item>
     </List>
+    <LogoutDiv>
+      <SLink to="/logout">Logout</SLink>
+    </LogoutDiv>
   </Header>
 ));

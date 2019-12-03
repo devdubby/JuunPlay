@@ -54,10 +54,7 @@ class HomeContainer extends Component {
 }
 
 const mapStateToProps = state => {
-  console.log('map stat to props homhomee!!', state);
-  return {
-
-  }
+  return {}
 };
 
 export default connect(
