@@ -1,8 +1,9 @@
-import React from "react";
+import React, { Component } from "react";
 import HomePresenter from "./HomePresenter";
+import { connect } from 'react-redux';
 import { getMoviesNowPlaying, getMoviesUpComing, getMoviesPopular } from "../../actions";
 
-export default class extends React.Component {
+class HomeContainer extends Component {
   state = {
     nowPlaying: null,
     upcoming: null,
@@ -51,3 +52,15 @@ export default class extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  console.log('map stat to props homhomee!!', state);
+  return {
+
+  }
+};
+
+export default connect(
+  mapStateToProps, 
+  {}
+)(HomeContainer);

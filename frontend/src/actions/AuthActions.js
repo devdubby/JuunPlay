@@ -1,21 +1,26 @@
 import { api } from "../api";
-import { LOGIN_USER, SIGNUP_USER } from "./types";
+import { SET_LOGIN_USER, SIGNUP_USER } from "./types";
 
-export const loginUser = async (email, password) => {
-  api.post("api/auth/login", {
+export const loginUser = (email, password) => {
+  return dispatch => {
+    api.post("api/auth/login", {
+      email,
+      password
+    }).then(res => {
+      const { data } = res;
+      dispatch(setLoginUser(data));
+    });
+  }
+}
+
+const setLoginUser = ({ id, name, email, jwtToken }) => {
+  return {
+    type: SET_LOGIN_USER,
+    id,
+    name,
     email,
-    password
-  }).then(res => {
-    const { data: { id, name, email, jwtToken } } = res;
-    console.log('data', res.data);
-    return {
-      type: LOGIN_USER,
-      id: id,
-      name: name,
-      email: email,
-      jwtToken: jwtToken,
-    }
-  })
+    jwtToken
+  }
 };
 
 export const signUpUser = async (name, email, password) => {

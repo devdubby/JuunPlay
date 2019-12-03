@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import LoginPresenter from "./LoginPresenter";
+import { connect } from 'react-redux';
 import { loginUser } from "../../actions";
 
 class LoginContainer extends Component {
@@ -28,7 +29,7 @@ class LoginContainer extends Component {
   onSubmit = async (event) => {
     event.preventDefault();
     const { email, password } = this.state;
-    await loginUser(email, password);
+    await this.props.loginUser(email, password);
     return this.props.history.push("/home");
   };
 
@@ -39,4 +40,13 @@ class LoginContainer extends Component {
   }
 }
 
-export default LoginContainer;
+const mapStateToProps = state => {
+  return {}
+};
+
+export default connect(
+  mapStateToProps, 
+  {
+    loginUser,
+  }
+)(LoginContainer);

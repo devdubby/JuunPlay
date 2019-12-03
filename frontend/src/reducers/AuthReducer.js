@@ -1,4 +1,5 @@
-import { LOGIN_USER, SIGNUP_USER } from "../actions/types";
+import { SIGNUP_USER, SET_LOGIN_USER } from "../actions/types";
+import { api } from "../api";
 
 const initialState = {
   id: '',
@@ -8,11 +9,15 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
+  console.log('action check:' ,action)
   switch(action.type) {
-    case LOGIN_USER:
-      console.log('login user type', state, action)
+    case SET_LOGIN_USER:
       return {
         ...state,
+        id: action.id,
+        name: action.name,
+        email: action.email,
+        jwtToken: action.jwtToken
       }
     case SIGNUP_USER:
       return {
