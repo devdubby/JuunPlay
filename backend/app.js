@@ -9,6 +9,7 @@ const config = require('./config/keys');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const reviewRouter = require('./routes/review');
 
 const app = express();
 const db = config.mongoURI;
@@ -34,5 +35,6 @@ mongoose.connect(db,{ useNewUrlParser: true })
 
 app.use('/', indexRouter);
 app.use('/api/auth', usersRouter);
+app.use('/api/review', reviewRouter);
 
 module.exports = app;

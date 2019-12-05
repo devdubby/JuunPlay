@@ -51,7 +51,7 @@ class LoginContainer extends Component {
     const result = await loginUser(email, password);
     alert(result.message);
     if(result.success) {
-      return this.props.history.push("/home");
+      return this.props.history.push("/");
     }
   };
 

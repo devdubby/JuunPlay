@@ -1,8 +1,14 @@
-import React from "react";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 import DetailPresenter from "./DetailPresenter";
-import { getMovieDetail, getShowDetail } from "../../actions";
+import {
+  getMovieDetail,
+  getShowDetail,
+  getShowVideos,
+  getReviews
+} from "../../actions";
 
-export default class extends React.Component {
+class DetailContainer extends Component {
   constructor(props) {
     super(props);
     const {
@@ -12,7 +18,10 @@ export default class extends React.Component {
       result: null,
       error: null,
       loading: true,
-      isMovie: pathname.includes("/movie/")
+      isMovie: pathname.includes("/movie/"),
+      showVideos: null,
+      reviews: null,
+      isLike: false,
     };
   }
 
@@ -29,22 +38,54 @@ export default class extends React.Component {
       return push("/");
     }
     let result = null;
+    let showVideos = null;
+
+    const { data } = await getReviews(parsedId);
     try {
       if (isMovie) {
         ({ data: result } = await getMovieDetail(parsedId));
       } else {
         ({ data: result } = await getShowDetail(parsedId));
+        ({ data: showVideos } = await getShowVideos(parsedId));
       }
     } catch {
       this.setState({ error: "Can't find anything." });
     } finally {
-      this.setState({ loading: false, result });
+      this.setState({ loading: false, result, showVideos, reviews: data });
     }
   }
 
+  handleLikeReview = () => {
+    const { isLike } = this.state;
+    this.setState({ isLike: !isLike })
+  }
+
   render() {
-    console.log('detail', this.state.result);
-    const { result, error, loading } = this.state;
-    return <DetailPresenter result={result} error={error} loading={loading} />;
+    console.log("detail", this.state);
+    console.log("detail props", this.props);
+    const { result, error, loading, showVideos, reviews, isLike } = this.state;
+    return (
+      <DetailPresenter
+        result={result}
+        error={error}
+        loading={loading}
+        showVideos={showVideos}
+        reviews={reviews}
+        handleLikeReview={this.handleLikeReview}
+        isLike={isLike}
+      />
+    );
   }
 }
+
+const mapStateToProps = state => {
+  const { auth } = state;
+  return {
+    user: auth
+  }
+};
+
+export default connect(
+  mapStateToProps, 
+  {}
+)(DetailContainer);

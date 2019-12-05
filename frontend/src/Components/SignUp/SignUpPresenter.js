@@ -67,6 +67,7 @@ const Button = styled.button`
   position: relative;
   cursor: pointer;
   opacity: ${props => (props.isNameValidation && props.isEmailValidation && props.isPasswordValidation ? null : 0.3)};
+  outline: none;
 `;
 
 const NameValiIcon = styled.i`
@@ -112,6 +113,7 @@ const SignUpPresenter = ({
           id="name"
           placeholder="Name(2자 이상)"
           onChange={onChange}
+          maxLength="20"
         />
         {name && name.length > 0 && (
           <NameValiIcon
@@ -123,7 +125,7 @@ const SignUpPresenter = ({
         )}
       </InputContainer>
       <InputContainer>
-        <Input type="text" id="email" placeholder="Email" onChange={onChange} />
+        <Input type="text" id="email" placeholder="Email" onChange={onChange} maxLength="28"/>
         {email && email.length > 0 && (
           <EmailValiIcon
             isEmailValidation={isEmailValidation}
@@ -139,6 +141,7 @@ const SignUpPresenter = ({
           id="password"
           placeholder="Password(6자 이상)"
           onChange={onChange}
+          maxLength="12"
         />
         {password && password.length > 0 && (
           <PasswordValiIcon

@@ -69,6 +69,7 @@ const Button = styled.button`
   position: relative;
   cursor: pointer;
   opacity: ${props => (props.isEmailValidation && props.isPasswordValidation ? null : 0.3)};
+  outline: none;
 `;
 
 const SignUpButton = styled(Link)`

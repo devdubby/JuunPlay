@@ -1,4 +1,4 @@
-import { theMovieApi } from "../api";
+import { theMovieApi, api } from "../api";
 
 export const getMoviesNowPlaying = async () => {
   return await theMovieApi.get("movie/now_playing");
@@ -43,7 +43,15 @@ export const getShowsAiringToday = async () => {
 export const getShowDetail = async (id) => {
   return await theMovieApi.get(`tv/${id}`, {
     params: {
-      append_to_response: "videos"
+      append_to_response: "videos",
+    }
+  });
+};
+
+export const getShowVideos = async (id) => {
+  return await theMovieApi.get(`tv/${id}/videos`, {
+    params: {
+      language: "en-US",
     }
   });
 };
@@ -55,3 +63,9 @@ export const getShowSearch = async (term) => {
     }
   });
 };
+
+export const getReviews = (contentID) => (
+  api.get(`/api/review?id=${contentID}`)
+  .then(res => res.data)
+  .catch(err => err.response.data)
+);

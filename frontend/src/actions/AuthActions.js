@@ -16,6 +16,7 @@ export const loginUser = (email, password) => {
 }
 
 const setLoginUser = ({ id, name, email, jwtToken }) => {
+  localStorage.setItem("jwtToken", jwtToken);
   return {
     type: SET_LOGIN_USER,
     id,

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import styled from "styled-components";
 
-const Header = styled.header`
+const HeaderContainer = styled.header`
   color: white;
   position: fixed;
   top: 0;
@@ -31,11 +32,24 @@ const Item = styled.li`
   transition: border-bottom 0.5s ease-in-out;
 `;
 
-const LogoutDiv = styled.div`
+const AuthButtonDiv = styled.div`
   width: 80px;
   height: 50px;
   text-align: center;
   border-bottom: 3px solid transparent;
+`;
+
+const LogoutButton = styled.button`
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 13px;
+  outline: none;
 `;
 
 const SLink = styled(Link)`
@@ -45,22 +59,46 @@ const SLink = styled(Link)`
   justify-content: center;
 `;
 
+class Header extends Component {
+  handleLogout = () => {
+    localStorage.removeItem("jwtToken");
+    window.location.reload();
+  };
 
-export default withRouter(({location: { pathname }}) => (
-  <Header>
-    <List>
-      <Item current={pathname === "/home"}>
-        <SLink to="/home">Movies</SLink>
-      </Item>
-      <Item current={pathname === "/tv"}>
-        <SLink to="/tv">TV</SLink>
-      </Item>
-      <Item current={pathname === "/search"}>
-        <SLink to="/search">Search</SLink>
-      </Item>
-    </List>
-    <LogoutDiv>
-      <SLink to="/logout">Logout</SLink>
-    </LogoutDiv>
-  </Header>
-));
+  render() {
+    const {
+      location: { pathname },
+      user: { jwtToken }
+    } = this.props;
+    return (
+      <HeaderContainer>
+        <List>
+          <Item current={pathname === "/"}>
+            <SLink to="/">Movies</SLink>
+          </Item>
+          <Item current={pathname === "/tv"}>
+            <SLink to="/tv">TV</SLink>
+          </Item>
+          <Item current={pathname === "/search"}>
+            <SLink to="/search">Search</SLink>
+          </Item>
+        </List>
+        <AuthButtonDiv>
+          {jwtToken ? (
+            <LogoutButton onClick={this.handleLogout}>Logout</LogoutButton>
+          ) : (
+            <SLink to="/login">Login</SLink>
+          )}
+        </AuthButtonDiv>
+      </HeaderContainer>
+    );
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    user: state.auth
+  };
+};
+
+export default connect(mapStateToProps, {})(withRouter(Header));

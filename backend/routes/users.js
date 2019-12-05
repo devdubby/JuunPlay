@@ -42,7 +42,7 @@ router.post("/login", (req, res, next) => {
 
   const check = user => {
     if (!user) {
-      throw new Error("로그인에 실패했습니다.");
+      throw new Error("이메일이 존재하지 않습니다.");
     } else {
       if (user.verify(password)) {
         // create a promise that generates jwt asynchronously
@@ -85,6 +85,7 @@ router.post("/login", (req, res, next) => {
   // error occured
   const onError = error => {
     res.status(403).json({
+      success: false,
       message: error.message
     });
   };
