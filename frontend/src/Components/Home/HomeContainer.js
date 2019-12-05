@@ -1,22 +1,30 @@
 import React, { Component } from "react";
 import HomePresenter from "./HomePresenter";
-import { connect } from 'react-redux';
-import { getMoviesNowPlaying, getMoviesUpComing, getMoviesPopular } from "../../actions";
+import { connect } from "react-redux";
+import {
+  getMoviesNowPlaying,
+  getMoviesUpComing,
+  getMoviesPopular
+} from "../../actions";
 
 class HomeContainer extends Component {
-  state = {
-    nowPlaying: null,
-    upcoming: null,
-    popular: null,
-    error: null,
-    loading: true
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      nowPlaying: null,
+      upcoming: null,
+      popular: null,
+      error: null,
+      loading: true
+    };
+  }
 
   async componentDidMount() {
     try {
       const {
         data: { results: nowPlaying }
       } = await getMoviesNowPlaying();
+
       const {
         data: { results: upcoming }
       } = await getMoviesUpComing();
@@ -55,11 +63,8 @@ class HomeContainer extends Component {
 
 const mapStateToProps = state => {
   return {
-    user: state.auth,
-  }
+    user: state.auth
+  };
 };
 
-export default connect(
-  mapStateToProps, 
-  {}
-)(HomeContainer);
+export default connect(mapStateToProps, {})(HomeContainer);

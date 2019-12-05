@@ -99,6 +99,7 @@ router.post("/login", (req, res, next) => {
 
 router.use("/check", authMiddleware);
 router.get("/check", (req, res, next) => {
+  console.log('req', req);
   res.json({
     success: true,
     info: req.decoded

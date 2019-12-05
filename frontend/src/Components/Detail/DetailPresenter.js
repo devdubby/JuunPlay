@@ -48,8 +48,8 @@ const Data = styled.div`
 
 const ReviewContainer = styled.div`
   width: 100%;
-  height: 76%;
-  max-height: 80%;
+  height: 85%;
+  max-height: 85%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,7 +75,7 @@ const Overview = styled.p`
   font-size: 12px;
   opacity: 0.7;
   line-height: 1.5;
-  margin-bottom: 20px;    
+  margin-bottom: 20px;
   max-height: 22.3vh;
   height: 22.3vh;
 `;
@@ -127,11 +127,12 @@ const ReviewDiv = styled.div`
 `;
 
 const InputContainer = styled.div`
-  height: 13vh;
-  max-height: 13vh;
+  height: 15%;
+  max-height: 15%;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 `;
 
 const ReviewInput = styled.input`
@@ -149,16 +150,22 @@ const InputBtnContainer = styled.div`
   width: 96%;
   height: 35px;
   display: flex;
-  justify-content: flex-end
+  justify-content: flex-end;
+  margin-top: 5px;
 `;
 
 const InputButton = styled.button`
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: ${props =>
+    props.name === "cancel"
+      ? "rgba(255, 255, 255, 0.3)"
+      : "rgba(0, 0, 0, 0.3)"};
   width: 18%;
   margin-left: 13px;
   border: none;
   border-radius: 5px;
   color: white;
+  cursor: pointer;
+  outline: none;
 `;
 
 const DetailPresenter = ({
@@ -168,12 +175,17 @@ const DetailPresenter = ({
   showVideos,
   reviews,
   handleLikeReview,
-  isLike
+  isLike,
+  user,
+  onChangeReview,
+  inputReviewValue,
+  onReviewCancel
 }) =>
   loading ? (
     <Loader />
   ) : (
     <Container>
+      {console.log("user", user)}
       <BackDrop
         bgImage={`https://image.tmdb.org/t/p/original${result.backdrop_path}`}
       />
@@ -252,20 +264,24 @@ const DetailPresenter = ({
               <EmptyText>작성된 리뷰가 없습니다.</EmptyText>
             )}
           </ReviewContainer>
-          <InputContainer><ReviewInput placeholder="리뷰를 작성하려면 로그인 해주세요." /></InputContainer>
-          <InputBtnContainer>
-            <InputButton>취소</InputButton>
-            <InputButton>확인</InputButton>
-          </InputBtnContainer>
+          <InputContainer>
+            <ReviewInput
+              value={inputReviewValue}
+              onChange={onChangeReview}
+              placeholder={
+                user && user.jwtToken
+                  ? "리뷰를 작성해주세요."
+                  : "리뷰를 작성하려면 로그인 해주세요."
+              }
+            />
+            {inputReviewValue && inputReviewValue.length > 0 && <InputBtnContainer>
+              <InputButton name="cancel" onClick={onReviewCancel}>취소</InputButton>
+              <InputButton name="confirm">확인</InputButton>
+            </InputBtnContainer>}
+          </InputContainer>
         </ReviewDiv>
       </Content>
     </Container>
   );
-
-DetailPresenter.propTypes = {
-  result: PropTypes.object,
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.string
-};
 
 export default DetailPresenter;

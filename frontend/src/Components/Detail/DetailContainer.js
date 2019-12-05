@@ -22,6 +22,7 @@ class DetailContainer extends Component {
       showVideos: null,
       reviews: null,
       isLike: false,
+      inputReviewValue: null,
     };
   }
 
@@ -60,10 +61,19 @@ class DetailContainer extends Component {
     this.setState({ isLike: !isLike })
   }
 
+  onChangeReview = (event) => {
+    this.setState({ inputReviewValue: event.target.value });
+  }
+
+  onReviewCancel = () => {
+    this.setState({ inputReviewValue: "" });
+  }
+
   render() {
     console.log("detail", this.state);
     console.log("detail props", this.props);
-    const { result, error, loading, showVideos, reviews, isLike } = this.state;
+    const { result, error, loading, showVideos, reviews, isLike, inputReviewValue } = this.state;
+    const { user } = this.props;
     return (
       <DetailPresenter
         result={result}
@@ -73,6 +83,10 @@ class DetailContainer extends Component {
         reviews={reviews}
         handleLikeReview={this.handleLikeReview}
         isLike={isLike}
+        user={user}
+        onChangeReview={this.onChangeReview}
+        inputReviewValue={inputReviewValue}
+        onReviewCancel={this.onReviewCancel}
       />
     );
   }

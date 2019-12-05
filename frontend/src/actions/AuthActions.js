@@ -35,3 +35,18 @@ export const signUpUser = (name, email, password) => (
   .then(res => res.data)
   .catch(err => err.response.data)
 );
+
+export const checkLoginUser = jwtToken => {
+  return dispatch => {
+    return api.get("api/auth/check", {
+      headers: {
+        'x-access-token': jwtToken
+      }
+    })
+    .then(res => {
+      dispatch(setLoginUser({...res.data.info, jwtToken}));
+      return res.data;
+    })
+    .catch(err => err.response.data);
+  }
+};
