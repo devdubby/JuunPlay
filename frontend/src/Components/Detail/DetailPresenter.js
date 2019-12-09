@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import Loader from "../Loader";
+import Review from "./Review";
 
 const Container = styled.div`
   height: 100vh;
@@ -46,15 +47,6 @@ const Data = styled.div`
   margin-left: 20px;
 `;
 
-const ReviewContainer = styled.div`
-  width: 100%;
-  height: 85%;
-  max-height: 85%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
 const Title = styled.h3`
   font-size: 32px;
 `;
@@ -78,38 +70,6 @@ const Overview = styled.p`
   margin-bottom: 20px;
   max-height: 22.3vh;
   height: 22.3vh;
-`;
-
-const ReviewBox = styled.div`
-  width: 92%;
-  padding: 0px 10px;
-  display: flex;
-  flex-direction: column;
-  line-height: 32px;
-  margin-bottom: 6px;
-`;
-
-const ReviewerName = styled.span`
-  font-size: 19px;
-`;
-
-const ReviewData = styled.span`
-  font-size: 15px;
-`;
-
-const LikeBox = styled.div``;
-
-const ReviewIcon = styled.button`
-  width: 31px;
-  font-size: 17px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  outline: none;
-`;
-
-const LikeCount = styled.span`
-  font-size: 15px;
 `;
 
 const EmptyText = styled.span`
@@ -168,24 +128,27 @@ const InputButton = styled.button`
   outline: none;
 `;
 
+const findLikedUser = (user, review) =>
+  review.liked_users_id.findIndex(element => element === user.id) === -1
+    ? false
+    : true;
+
 const DetailPresenter = ({
   result,
   loading,
   error,
   showVideos,
   reviews,
-  handleLikeReview,
-  isLike,
   user,
   onChangeReview,
   inputReviewValue,
-  onReviewCancel
+  onReviewCancel,
+  onSubmit
 }) =>
   loading ? (
     <Loader />
   ) : (
     <Container>
-      {console.log("user", user)}
       <BackDrop
         bgImage={`https://image.tmdb.org/t/p/original${result.backdrop_path}`}
       />
@@ -242,28 +205,18 @@ const DetailPresenter = ({
           ></Iframe>
         </Data>
         <ReviewDiv>
-          <ReviewContainer>
-            {reviews && reviews.length > 0 ? (
-              reviews.map(review => (
-                <ReviewBox key={review.id}>
-                  <ReviewerName>{review.writer_name}</ReviewerName>
-                  <ReviewData>{review.review_data}</ReviewData>
-                  <LikeBox>
-                    <ReviewIcon onClick={handleLikeReview}>
-                      <i
-                        className={
-                          isLike ? "fas fa-thumbs-up" : "far fa-thumbs-up"
-                        }
-                      ></i>
-                    </ReviewIcon>
-                    <LikeCount>{review.liked_users_id.length}</LikeCount>
-                  </LikeBox>
-                </ReviewBox>
-              ))
-            ) : (
-              <EmptyText>작성된 리뷰가 없습니다.</EmptyText>
-            )}
-          </ReviewContainer>
+          {reviews && reviews.length > 0 ? (
+            reviews.map((review, index) => (
+              <Review
+                key={review.id}
+                review={review}
+                isLike={findLikedUser(user, review)}
+                likeCount={review.liked_users_id.length}
+              />
+            ))
+          ) : (
+            <EmptyText>작성된 리뷰가 없습니다.</EmptyText>
+          )}
           <InputContainer>
             <ReviewInput
               value={inputReviewValue}
@@ -273,11 +226,18 @@ const DetailPresenter = ({
                   ? "리뷰를 작성해주세요."
                   : "리뷰를 작성하려면 로그인 해주세요."
               }
+              disabled={user && user.jwtToken ? false : true}
             />
-            {inputReviewValue && inputReviewValue.length > 0 && <InputBtnContainer>
-              <InputButton name="cancel" onClick={onReviewCancel}>취소</InputButton>
-              <InputButton name="confirm">확인</InputButton>
-            </InputBtnContainer>}
+            {inputReviewValue && inputReviewValue.length > 0 && (
+              <InputBtnContainer>
+                <InputButton name="cancel" onClick={onReviewCancel}>
+                  취소
+                </InputButton>
+                <InputButton name="confirm" onClick={onSubmit}>
+                  확인
+                </InputButton>
+              </InputBtnContainer>
+            )}
           </InputContainer>
         </ReviewDiv>
       </Content>

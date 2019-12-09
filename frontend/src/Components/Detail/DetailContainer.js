@@ -5,7 +5,8 @@ import {
   getMovieDetail,
   getShowDetail,
   getShowVideos,
-  getReviews
+  getReviews,
+  inputReview
 } from "../../actions";
 
 class DetailContainer extends Component {
@@ -21,8 +22,7 @@ class DetailContainer extends Component {
       isMovie: pathname.includes("/movie/"),
       showVideos: null,
       reviews: null,
-      isLike: false,
-      inputReviewValue: null,
+      inputReviewValue: '',
     };
   }
 
@@ -56,23 +56,35 @@ class DetailContainer extends Component {
     }
   }
 
-  handleLikeReview = () => {
-    const { isLike } = this.state;
-    this.setState({ isLike: !isLike })
-  }
-
-  onChangeReview = (event) => {
+  onChangeReview = event => {
     this.setState({ inputReviewValue: event.target.value });
-  }
+  };
 
   onReviewCancel = () => {
     this.setState({ inputReviewValue: "" });
-  }
+  };
+
+  onSubmit = async () => {
+    const { inputReviewValue } = this.state;
+    const { user: { jwtToken } } = this.props;
+    
+    if(!jwtToken) {
+      return alert("먼저 로그인 해주세요");
+    }
+
+    const {
+      user: { jwtToken },
+      match: {
+        params: { id }
+      }
+    } = this.props;
+    await inputReview(inputReviewValue, parseInt(id), jwtToken);
+    // window.location.reload();
+  };
 
   render() {
-    console.log("detail", this.state);
-    console.log("detail props", this.props);
-    const { result, error, loading, showVideos, reviews, isLike, inputReviewValue } = this.state;
+    console.log('detail props', this.props);
+    const { result, error, loading, showVideos, reviews, inputReviewValue } = this.state;
     const { user } = this.props;
     return (
       <DetailPresenter
@@ -81,12 +93,11 @@ class DetailContainer extends Component {
         loading={loading}
         showVideos={showVideos}
         reviews={reviews}
-        handleLikeReview={this.handleLikeReview}
-        isLike={isLike}
         user={user}
         onChangeReview={this.onChangeReview}
         inputReviewValue={inputReviewValue}
         onReviewCancel={this.onReviewCancel}
+        onSubmit={this.onSubmit}
       />
     );
   }

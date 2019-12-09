@@ -36,9 +36,9 @@ Review.statics.deleteOneByID = function(id) {
   }).exec();
 };
 
-// Review.statics.findByIdAndUpdate = function(id) {
-//   return this.findByIdAndUpdate({ id }, { ${push: {liked_users} } }).
-// };
+Review.statics.findOneByIDAndUpdateLikedUsers = function(reviewID, id) {
+  return this.findOneAndUpdate({ id: reviewID }, { $push: { liked_users_id: id } }).exec();
+};
 
 autoIncrement.initialize(mongoose.connection);
 Review.plugin(autoIncrement.plugin, {
