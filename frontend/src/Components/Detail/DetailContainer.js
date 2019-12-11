@@ -22,6 +22,8 @@ class DetailContainer extends Component {
       isMovie: pathname.includes("/movie/"),
       showVideos: null,
       inputReviewValue: '',
+      clickedIndex: 0,
+      activeVideoIndex: 0,
     };
   }
 
@@ -34,7 +36,7 @@ class DetailContainer extends Component {
       user: { jwtToken }
     } = this.props;
 
-    if(jwtToken === "") return this.props.history.push("/");
+    // if(jwtToken === "") return this.props.history.push("/");
 
     const { isMovie } = this.state;
     const parsedId = parseInt(id);
@@ -56,6 +58,9 @@ class DetailContainer extends Component {
     } finally {
       this.setState({ loading: false, result, showVideos });
     }
+    setTimeout(() => {
+      this.setState({ isTest: 1 });
+    }, 8000);
   }
 
   onChangeReview = event => {
@@ -80,12 +85,35 @@ class DetailContainer extends Component {
     }
     
     await inputReview(inputReviewValue, parseInt(id), jwtToken);
-    // window.location.reload();
+    window.location.reload();
   };
 
+  btnActiveHandler = (index) => {
+    this.setState({ clickedIndex: index });
+  };
+
+  leftVideoActiveHandler = () => {
+    const { activeVideoIndex, result } = this.state;
+    if(activeVideoIndex - 1 === -1) {
+      this.setState({ activeVideoIndex: result.videos.results.length - 1 });
+      return;
+    }
+    this.setState({ activeVideoIndex: this.state.activeVideoIndex - 1 })
+  }
+
+  rightVideoActiveHandler = () => {
+    const { activeVideoIndex, result } = this.state;
+    if(activeVideoIndex + 1 === result.videos.results.length) {
+      this.setState({  activeVideoIndex: 0});
+      return;
+    }
+    this.setState({ activeVideoIndex: this.state.activeVideoIndex + 1 })
+  }
+
   render() {
-    const { result, error, loading, showVideos, inputReviewValue } = this.state;
+    const { result, error, loading, showVideos, inputReviewValue, clickedIndex, activeVideoIndex } = this.state;
     const { user } = this.props;
+    console.log('Detail', this.state);
     return (
       <DetailPresenter
         result={result}
@@ -97,6 +125,11 @@ class DetailContainer extends Component {
         inputReviewValue={inputReviewValue}
         onReviewCancel={this.onReviewCancel}
         onSubmit={this.onSubmit}
+        btnActiveHandler={this.btnActiveHandler}
+        clickedIndex={clickedIndex}
+        leftVideoActiveHandler={this.leftVideoActiveHandler}
+        rightVideoActiveHandler={this.rightVideoActiveHandler}
+        activeVideoIndex={activeVideoIndex}
       />
     );
   }

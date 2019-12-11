@@ -46,14 +46,14 @@ const Year = styled.span`
   color: rgba(255, 255, 255, 0.5);
 `;
 
-const onClick = (jwtToken) => {
-  if(!jwtToken) {
-    alert("로그인 먼저 해주세요.");
-  }
-}
+// const onClick = (jwtToken) => {
+//   if(!jwtToken) {
+//     alert("로그인 먼저 해주세요.");
+//   }
+// }
 
 const Poster = ({ id, imageUrl, title, rating, year, isMovie = false, jwtToken }) => (
-  <Link to={jwtToken ? (isMovie ? `/movie/${id}` : `/show/${id}`) : "/login"} onClick={() => onClick(jwtToken)}>
+  <Link to={isMovie ? `/movie/${id}` : `/show/${id}`}>
     <Container>
       <ImageContainer>
         <Image
@@ -71,7 +71,7 @@ const Poster = ({ id, imageUrl, title, rating, year, isMovie = false, jwtToken }
         </Rating>
       </ImageContainer>
       <Title>
-        {title.length > 18 ? `${title.substring(0, 18)}...` : title}
+        {title.length > 11 ? `${title.substring(0, 11)}...` : title}
       </Title>
       <Year>{year}</Year>
     </Container>

@@ -3,25 +3,16 @@ const router = express.Router();
 const Review = require("../models/Review");
 const authMiddleware = require("../middlewares/auth");
 
-router.use("/", authMiddleware);
 router.get("/", (req, res, next) => {
   const {
-    decoded: { id: userID },
     query: { id: content_id }
   } = req;
   
   const respond = data => {
-    const myData = data;
-
-    const result = myData.map(data => {
-      const index = data.liked_users_id.findIndex(element => element === userID);
-      return {...data, is_my_like: index === -1 ? false : true};
-    })
-
     res.json({
       success: true,
       message: "found the content",
-      data: result
+      data
     });
   };
 
@@ -73,7 +64,7 @@ router.put("/like", (req, res, next) => {
     });
   };
   
-  Review.findOneByIDAndUpdateLikedUsers(reviewID, id).then(respond);
+  Review.findOneByIDAndUpdateLikedUsers(reviewID, id, true).then(respond);
 });
 
 router.use("/like/undo", authMiddleware);
@@ -82,6 +73,15 @@ router.put("/like/undo", (req, res, next) => {
     decoded: { id },
     query: { id: reviewID }
   } = req;
+
+  const respond = () => {
+    res.json({
+      success: true,
+      message: "unliked"
+    });
+  };
+
+  Review.findOneByIDAndUpdateLikedUsers(reviewID, id).then(respond);
 });
 
 module.exports = router;

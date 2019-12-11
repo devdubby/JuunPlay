@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import ReactTooltip from "react-tooltip";
+import { likeReview, unLikeReview } from "../../../actions";
 
 const ReviewContainer = styled.div`
-  width: 100%;
+  width: 48%;
   height: 29.6%;
   max-height: 29.5%;
   display: flex;
@@ -52,24 +54,55 @@ class ReviewPresenter extends Component {
   }
 
   componentDidMount() {
-    const { isMyLike } = this.props;
-    console.log('is my like', this.props);
-    this.setState({ isLike: isMyLike ? true : false });
+    const { isMyLike, likeCount } = this.props;
+    this.setState({ isLike: isMyLike ? true : false, likeCount });
+  };
+  
+  handleLikeReview = () => {
+    const { isLike, likeCount } = this.state;
+    const { user: { jwtToken } } = this.props;
+
+    if(!jwtToken) return;
+
+    if (isLike) {
+      this.setState({ isLike: false, likeCount: likeCount - 1 });
+    } else {
+      this.setState({ isLike: true, likeCount: likeCount + 1 });
+    }
+    console.log('handle like review');
   };
 
-  render() {
+   async componentWillUnmount() {
     const { isLike } = this.state;
-    console.log('isLike', isLike);
-    const { review, handleLikeReview , likeCount } = this.props;
+    const {
+      review: { id },
+      user: { jwtToken },
+      isMyLike
+    } = this.props;
+
+    if(isLike !== isMyLike) {
+      if (isLike) {
+        return await likeReview(id, jwtToken);
+      } else {
+        return await unLikeReview(id, jwtToken);
+      }
+    }
+  }
+
+  render() {
+    const { isLike, likeCount } = this.state;
+    console.log('props는 그대로 있나?', this.props.isMyLike);
+    const { review, user: { jwtToken } } = this.props;
     return (
       <ReviewContainer>
         <ReviewBox>
           <ReviewerName>{review.writer_name}</ReviewerName>
           <ReviewData>{review.review_data}</ReviewData>
           <LikeBox>
-            <ReviewIcon onClick={handleLikeReview}>
+            <ReviewIcon onClick={this.handleLikeReview} data-tip={"로그인 해주세요"} place="right">
               <i className={isLike ? "fas fa-thumbs-up" : "far fa-thumbs-up"}></i>
             </ReviewIcon>
+            {!jwtToken && <ReactTooltip />}
             <LikeCount>{likeCount}</LikeCount>
           </LikeBox>
         </ReviewBox>

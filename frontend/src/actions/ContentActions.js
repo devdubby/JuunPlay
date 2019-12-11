@@ -109,8 +109,14 @@ export const likeReview = (id, jwtToken) => {
   .catch(err => err.response.data);
 };
 
-export const unLikeReview = id => {
-  api.put(`api/review/like/undo?id=${id}`)
+export const unLikeReview = (id, jwtToken) => {
+  api.put(`api/review/like/undo?id=${id}`, {}, {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Headers": "x-access-token",
+      "x-access-token": jwtToken
+    }
+  })
   .then(res => res.data)
   .catch(err => err.response.data);
 };

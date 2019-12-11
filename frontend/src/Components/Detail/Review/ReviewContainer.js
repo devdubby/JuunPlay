@@ -3,7 +3,7 @@ import { withRouter } from "react-router-dom";
 import ReviewPresenter from "./ReviewPresenter";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import { getReviews, likeReview, unLikeReview } from "../../../actions";
+import { getReviews } from "../../../actions";
 import Loader from "../../Loader";
 
 const LoaderContainer = styled.div`
@@ -49,29 +49,6 @@ class ReviewContainer extends Component {
     }
   }
 
-  // handleLikeReview = () => {
-  //   const { isLike, likeCount } = this.state;
-  //   if (isLike) {
-  //     this.setState({ isLike: false, likeCount: likeCount - 1 });
-  //   } else {
-  //     this.setState({ isLike: true, likeCount: likeCount + 1 });
-  //   }
-  // };
-
-  // async componentWillUnmount() {
-  //   const { isLike } = this.state;
-  //   const {
-  //     review: { id },
-  //     user: { jwtToken }
-  //   } = this.props;
-
-  //   if (isLike) {
-  //     return await likeReview(id, jwtToken);
-  //   } else {
-  //     // return await unLikeReview(id, jwtToken);
-  //   }
-  // }
-
   findLikedUser = (user, liked_users_id) =>
   liked_users_id.findIndex(element => element === user.id) === -1
     ? false
@@ -80,7 +57,6 @@ class ReviewContainer extends Component {
   render() {
     const { reviews, loading } = this.state;
     const { user } = this.props;
-    console.log('review container', this.props);
     return (
       <>
         {loading ? (
@@ -97,7 +73,6 @@ class ReviewContainer extends Component {
               review={review}
               isMyLike={this.findLikedUser(user, review.liked_users_id)}
               likeCount={review.liked_users_id.length}
-              handleLikeReview={this.handleLikeReview}
             />
           ))
         ) : (
