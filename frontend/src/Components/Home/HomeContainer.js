@@ -49,6 +49,7 @@ class HomeContainer extends Component {
 
   render() {
     const { nowPlaying, upcoming, popular, error, loading } = this.state;
+    const { user: { jwtToken } } = this.props;
     return (
       <HomePresenter
         nowPlaying={nowPlaying}
@@ -56,6 +57,7 @@ class HomeContainer extends Component {
         popular={popular}
         error={error}
         loading={loading}
+        jwtToken={jwtToken}
       />
     );
   }

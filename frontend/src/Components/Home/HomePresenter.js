@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import Section from "../Section";
 import Loader from "../Loader";
@@ -10,7 +9,7 @@ const Container = styled.div`
   padding: 70px 20px 20px 20px;
 `;
 
-const HomePresenter = ({ nowPlaying, popular, upcoming, loading, error }) =>
+const HomePresenter = ({ nowPlaying, popular, upcoming, loading, error, jwtToken }) =>
   loading ? (
     <Loader />
   ) : (
@@ -26,6 +25,7 @@ const HomePresenter = ({ nowPlaying, popular, upcoming, loading, error }) =>
               rating={movie.vote_average}
               year={movie.release_date.substring(0, 4)}
               isMovie={true}
+              jwtToken={jwtToken}
             />
           ))}
         </Section>
@@ -41,6 +41,7 @@ const HomePresenter = ({ nowPlaying, popular, upcoming, loading, error }) =>
               rating={movie.vote_average}
               year={movie.release_date.substring(0, 4)}
               isMovie={true}
+              jwtToken={jwtToken}
             />
           ))}
         </Section>
@@ -56,6 +57,7 @@ const HomePresenter = ({ nowPlaying, popular, upcoming, loading, error }) =>
               rating={movie.vote_average}
               year={movie.release_date.substring(0, 4)}
               isMovie={true}
+              jwtToken={jwtToken}
             />
           ))}
         </Section>
@@ -63,13 +65,5 @@ const HomePresenter = ({ nowPlaying, popular, upcoming, loading, error }) =>
       {error && <Message color="#e74c3c" text={error} />}
     </Container>
   );
-
-HomePresenter.propTypes = {
-  nowPlaying: PropTypes.array,
-  popular: PropTypes.array,
-  upcoming: PropTypes.array,
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.string
-};
 
 export default HomePresenter;

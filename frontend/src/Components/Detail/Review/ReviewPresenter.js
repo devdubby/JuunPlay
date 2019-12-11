@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import styled from "styled-components";
 
 const ReviewContainer = styled.div`
@@ -42,19 +42,40 @@ const LikeCount = styled.span`
   font-size: 15px;
 `;
 
-const ReviewPresenter = ({ review, handleLikeReview, isLike, likeCount }) => (
-  <ReviewContainer>
-    <ReviewBox>
-      <ReviewerName>{review.writer_name}</ReviewerName>
-      <ReviewData>{review.review_data}</ReviewData>
-      <LikeBox>
-        <ReviewIcon onClick={handleLikeReview}>
-          <i className={isLike ? "fas fa-thumbs-up" : "far fa-thumbs-up"}></i>
-        </ReviewIcon>
-        <LikeCount>{likeCount}</LikeCount>
-      </LikeBox>
-    </ReviewBox>
-  </ReviewContainer>
-);
+class ReviewPresenter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLike: null,
+      likeCount: null,
+    };
+  }
+
+  componentDidMount() {
+    const { isMyLike } = this.props;
+    console.log('is my like', this.props);
+    this.setState({ isLike: isMyLike ? true : false });
+  };
+
+  render() {
+    const { isLike } = this.state;
+    console.log('isLike', isLike);
+    const { review, handleLikeReview , likeCount } = this.props;
+    return (
+      <ReviewContainer>
+        <ReviewBox>
+          <ReviewerName>{review.writer_name}</ReviewerName>
+          <ReviewData>{review.review_data}</ReviewData>
+          <LikeBox>
+            <ReviewIcon onClick={handleLikeReview}>
+              <i className={isLike ? "fas fa-thumbs-up" : "far fa-thumbs-up"}></i>
+            </ReviewIcon>
+            <LikeCount>{likeCount}</LikeCount>
+          </LikeBox>
+        </ReviewBox>
+      </ReviewContainer>
+    );
+  };
+};
 
 export default ReviewPresenter;

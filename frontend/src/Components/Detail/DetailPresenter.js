@@ -72,11 +72,6 @@ const Overview = styled.p`
   height: 22.3vh;
 `;
 
-const EmptyText = styled.span`
-  font-size: 23px;
-  margin-top: 7vh;
-`;
-
 const Iframe = styled.iframe`
   border-radius: 5px;
 `;
@@ -84,6 +79,7 @@ const Iframe = styled.iframe`
 const ReviewDiv = styled.div`
   margin-left: 10px;
   width: 31%;
+  max-width: 31%;
 `;
 
 const InputContainer = styled.div`
@@ -128,17 +124,11 @@ const InputButton = styled.button`
   outline: none;
 `;
 
-const findLikedUser = (user, review) =>
-  review.liked_users_id.findIndex(element => element === user.id) === -1
-    ? false
-    : true;
-
 const DetailPresenter = ({
   result,
   loading,
   error,
   showVideos,
-  reviews,
   user,
   onChangeReview,
   inputReviewValue,
@@ -205,18 +195,7 @@ const DetailPresenter = ({
           ></Iframe>
         </Data>
         <ReviewDiv>
-          {reviews && reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <Review
-                key={review.id}
-                review={review}
-                isLike={findLikedUser(user, review)}
-                likeCount={review.liked_users_id.length}
-              />
-            ))
-          ) : (
-            <EmptyText>작성된 리뷰가 없습니다.</EmptyText>
-          )}
+          <Review />
           <InputContainer>
             <ReviewInput
               value={inputReviewValue}

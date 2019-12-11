@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -47,8 +46,14 @@ const Year = styled.span`
   color: rgba(255, 255, 255, 0.5);
 `;
 
-const Poster = ({ id, imageUrl, title, rating, year, isMovie = false }) => (
-  <Link to={isMovie ? `/movie/${id}` : `/show/${id}`}>
+const onClick = (jwtToken) => {
+  if(!jwtToken) {
+    alert("로그인 먼저 해주세요.");
+  }
+}
+
+const Poster = ({ id, imageUrl, title, rating, year, isMovie = false, jwtToken }) => (
+  <Link to={jwtToken ? (isMovie ? `/movie/${id}` : `/show/${id}`) : "/login"} onClick={() => onClick(jwtToken)}>
     <Container>
       <ImageContainer>
         <Image
@@ -72,14 +77,5 @@ const Poster = ({ id, imageUrl, title, rating, year, isMovie = false }) => (
     </Container>
   </Link>
 );
-
-Poster.propTypes = {
-  id: PropTypes.number.isRequired,
-  imageUrl: PropTypes.string,
-  title: PropTypes.string.isRequired,
-  rating: PropTypes.number,
-  year: PropTypes.string,
-  isMovie: PropTypes.bool
-};
 
 export default Poster;

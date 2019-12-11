@@ -76,7 +76,9 @@ class LoginContainer extends Component {
 }
 
 const mapStateToProps = state => {
-  return {};
+  return {
+    user: state.auth,
+  };
 };
 
 export default connect(mapStateToProps, {

@@ -64,11 +64,16 @@ export const getShowSearch = async term => {
   });
 };
 
-export const getReviews = contentID =>
-  api
-    .get(`/api/review?id=${contentID}`)
-    .then(res => res.data)
-    .catch(err => err.response.data);
+export const getReviews = (contentID, jwtToken) =>
+  api.get(`/api/review?id=${contentID}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Headers": "x-access-token",
+      "x-access-token": jwtToken
+    }
+  })
+  .then(res => res.data)
+  .catch(err => err.response.data);
 
 export const inputReview = (reviewData, contentID, jwtToken) =>
   api.post(

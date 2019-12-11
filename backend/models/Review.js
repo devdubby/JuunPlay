@@ -27,7 +27,7 @@ Review.statics.create = function(writer_id, writer_name, writer_email, related_c
 };
 
 Review.statics.findAllByContentID = function(id) {
-  return this.find().where('related_content_id').equals(id).exec();
+  return this.find().where('related_content_id').equals(id).lean().exec();
 };
 
 Review.statics.deleteOneByID = function(id) {

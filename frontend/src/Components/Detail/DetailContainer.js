@@ -21,7 +21,6 @@ class DetailContainer extends Component {
       loading: true,
       isMovie: pathname.includes("/movie/"),
       showVideos: null,
-      reviews: null,
       inputReviewValue: '',
     };
   }
@@ -31,8 +30,12 @@ class DetailContainer extends Component {
       match: {
         params: { id }
       },
-      history: { push }
+      history: { push },
+      user: { jwtToken }
     } = this.props;
+
+    if(jwtToken === "") return this.props.history.push("/");
+
     const { isMovie } = this.state;
     const parsedId = parseInt(id);
     if (isNaN(parsedId)) {
@@ -41,7 +44,6 @@ class DetailContainer extends Component {
     let result = null;
     let showVideos = null;
 
-    const { data } = await getReviews(parsedId);
     try {
       if (isMovie) {
         ({ data: result } = await getMovieDetail(parsedId));
@@ -52,7 +54,7 @@ class DetailContainer extends Component {
     } catch {
       this.setState({ error: "Can't find anything." });
     } finally {
-      this.setState({ loading: false, result, showVideos, reviews: data });
+      this.setState({ loading: false, result, showVideos });
     }
   }
 
@@ -66,25 +68,23 @@ class DetailContainer extends Component {
 
   onSubmit = async () => {
     const { inputReviewValue } = this.state;
-    const { user: { jwtToken } } = this.props;
-    
-    if(!jwtToken) {
-      return alert("먼저 로그인 해주세요");
-    }
-
     const {
       user: { jwtToken },
       match: {
         params: { id }
       }
     } = this.props;
+    
+    if(!jwtToken) {
+      return alert("먼저 로그인 해주세요");
+    }
+    
     await inputReview(inputReviewValue, parseInt(id), jwtToken);
     // window.location.reload();
   };
 
   render() {
-    console.log('detail props', this.props);
-    const { result, error, loading, showVideos, reviews, inputReviewValue } = this.state;
+    const { result, error, loading, showVideos, inputReviewValue } = this.state;
     const { user } = this.props;
     return (
       <DetailPresenter
@@ -92,7 +92,6 @@ class DetailContainer extends Component {
         error={error}
         loading={loading}
         showVideos={showVideos}
-        reviews={reviews}
         user={user}
         onChangeReview={this.onChangeReview}
         inputReviewValue={inputReviewValue}
