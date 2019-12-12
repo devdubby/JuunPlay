@@ -58,9 +58,6 @@ class DetailContainer extends Component {
     } finally {
       this.setState({ loading: false, result, showVideos });
     }
-    setTimeout(() => {
-      this.setState({ isTest: 1 });
-    }, 8000);
   }
 
   onChangeReview = event => {
@@ -85,6 +82,7 @@ class DetailContainer extends Component {
     }
     
     await inputReview(inputReviewValue, parseInt(id), jwtToken);
+    alert("리뷰가 등록 되었습니다.")
     window.location.reload();
   };
 

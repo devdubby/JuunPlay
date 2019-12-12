@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import Loader from "../Loader";
 import Review from "./Review";
+import Works from "./Works";
 
 const Container = styled.div`
   height: 100vh;
@@ -149,14 +150,6 @@ const ReviewContainer = styled.div`
   align-items: center;
 `;
 
-const ReviewDiv = styled.div`
-  width: 100%;
-  height: 86%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-`;
-
 const InputContainer = styled.div`
   width: 49%;
   height: 16%;
@@ -200,11 +193,6 @@ const InputButton = styled.button`
   outline: none;
 `;
 
-const RelatedWorks = styled.div`
-  height: 91%;
-  min-height: 91%;
-`;
-
 const btnArray = ["기본정보", "리뷰", "관련작품"];
 
 const DetailPresenter = ({
@@ -221,7 +209,9 @@ const DetailPresenter = ({
   clickedIndex,
   leftVideoActiveHandler,
   rightVideoActiveHandler,
-  activeVideoIndex
+  activeVideoIndex,
+  leftReviewHandler,
+  rightReviewHandler
 }) =>
   loading ? (
     <Loader />
@@ -297,9 +287,7 @@ const DetailPresenter = ({
           </InformationDiv>}
           {clickedIndex === 1 && 
           <ReviewContainer>
-            <ReviewDiv>
-              <Review />
-            </ReviewDiv>
+            <Review />
             <InputContainer>
               <ReviewInput
                 value={inputReviewValue}
@@ -323,10 +311,7 @@ const DetailPresenter = ({
               )}
             </InputContainer>
           </ReviewContainer>}
-          {clickedIndex === 2 &&
-          <RelatedWorks>
-            test
-          </RelatedWorks>}
+          {clickedIndex === 2 && <Works />}
           <BtnContainer>
             {btnArray.map((btn, index) => {
               return (

@@ -7,6 +7,7 @@ const ReviewContainer = styled.div`
   width: 48%;
   height: 29.6%;
   max-height: 29.5%;
+  margin: 5px 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,6 +28,8 @@ const ReviewerName = styled.span`
 
 const ReviewData = styled.span`
   font-size: 15px;
+  line-height: 21px;
+  word-break: keep-all;
 `;
 
 const LikeBox = styled.div``;
@@ -69,7 +72,6 @@ class ReviewPresenter extends Component {
     } else {
       this.setState({ isLike: true, likeCount: likeCount + 1 });
     }
-    console.log('handle like review');
   };
 
    async componentWillUnmount() {
@@ -91,7 +93,6 @@ class ReviewPresenter extends Component {
 
   render() {
     const { isLike, likeCount } = this.state;
-    console.log('props는 그대로 있나?', this.props.isMyLike);
     const { review, user: { jwtToken } } = this.props;
     return (
       <ReviewContainer>

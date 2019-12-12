@@ -28,6 +28,11 @@ export const getMovieSearch = async term => {
   });
 };
 
+export const getMovieSimilar = async id => 
+  theMovieApi.get(`movie/${id}/similar`)
+  .then(res => res.data)
+  .catch(err => err.response.data)
+
 export const getShowsTopRated = async () => {
   return await theMovieApi.get("tv/top_rated");
 };
@@ -63,6 +68,12 @@ export const getShowSearch = async term => {
     }
   });
 };
+
+export const getShowSimilar = async id => 
+  theMovieApi.get(`tv/${id}/similar`)
+  .then(res => res.data)
+  .catch(err => err.response.data)
+
 
 export const getReviews = (contentID, jwtToken) =>
   api.get(`/api/review?id=${contentID}`, {
