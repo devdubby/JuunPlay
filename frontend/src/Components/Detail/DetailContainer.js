@@ -6,7 +6,6 @@ import {
   getShowDetail,
   getShowVideos,
   getReviews,
-  inputReview
 } from "../../actions";
 
 class DetailContainer extends Component {
@@ -21,8 +20,7 @@ class DetailContainer extends Component {
       loading: true,
       isMovie: pathname.includes("/movie/"),
       showVideos: null,
-      inputReviewValue: '',
-      clickedIndex: 0,
+      tabIndex: 0,
       activeVideoIndex: 0,
     };
   }
@@ -58,36 +56,10 @@ class DetailContainer extends Component {
     } finally {
       this.setState({ loading: false, result, showVideos });
     }
-  }
-
-  onChangeReview = event => {
-    this.setState({ inputReviewValue: event.target.value });
-  };
-
-  onReviewCancel = () => {
-    this.setState({ inputReviewValue: "" });
-  };
-
-  onSubmit = async () => {
-    const { inputReviewValue } = this.state;
-    const {
-      user: { jwtToken },
-      match: {
-        params: { id }
-      }
-    } = this.props;
-    
-    if(!jwtToken) {
-      return alert("먼저 로그인 해주세요");
-    }
-    
-    await inputReview(inputReviewValue, parseInt(id), jwtToken);
-    alert("리뷰가 등록 되었습니다.")
-    window.location.reload();
   };
 
   btnActiveHandler = (index) => {
-    this.setState({ clickedIndex: index });
+    this.setState({ tabIndex: index });
   };
 
   leftVideoActiveHandler = () => {
@@ -109,7 +81,7 @@ class DetailContainer extends Component {
   }
 
   render() {
-    const { result, error, loading, showVideos, inputReviewValue, clickedIndex, activeVideoIndex } = this.state;
+    const { result, error, loading, showVideos, tabIndex, activeVideoIndex } = this.state;
     const { user } = this.props;
     console.log('Detail', this.state);
     return (
@@ -119,12 +91,8 @@ class DetailContainer extends Component {
         loading={loading}
         showVideos={showVideos}
         user={user}
-        onChangeReview={this.onChangeReview}
-        inputReviewValue={inputReviewValue}
-        onReviewCancel={this.onReviewCancel}
-        onSubmit={this.onSubmit}
         btnActiveHandler={this.btnActiveHandler}
-        clickedIndex={clickedIndex}
+        tabIndex={tabIndex}
         leftVideoActiveHandler={this.leftVideoActiveHandler}
         rightVideoActiveHandler={this.rightVideoActiveHandler}
         activeVideoIndex={activeVideoIndex}

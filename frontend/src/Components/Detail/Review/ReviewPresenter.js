@@ -1,115 +1,197 @@
 import React, { Component } from "react";
+import Review from "./Review";
 import styled from "styled-components";
-import ReactTooltip from "react-tooltip";
-import { likeReview, unLikeReview } from "../../../actions";
+
+const Container = styled.div`
+  width: 100%;
+  height: 90%;
+  background-color: green;
+  display: flex;
+`;
+
+const Content = styled.div`
+  width: 25%;
+  height: 100%;
+  background-color: gray;
+`;
 
 const ReviewContainer = styled.div`
-  width: 48%;
-  height: 29.6%;
-  max-height: 29.5%;
-  margin: 5px 0px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-left: 60px;
+  width: 71%;
+  height: 100%;
+  background-color: aqua;
 `;
 
 const ReviewBox = styled.div`
-  width: 92%;
-  padding: 0px 10px;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  line-height: 32px;
-  margin-bottom: 6px;
+  flex-wrap: wrap;
 `;
 
-const ReviewerName = styled.span`
-  font-size: 19px;
+const LoaderContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  margin-top: 20px;
 `;
 
-const ReviewData = styled.span`
-  font-size: 15px;
-  line-height: 21px;
-  word-break: keep-all;
+const EmptyText = styled.span`
+  font-size: 23px;
+  margin-top: 7vh;
 `;
 
-const LikeBox = styled.div``;
+const ChevronContainer = styled.div`
+  height: 50%;
+  width: 4%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-const ReviewIcon = styled.button`
-  width: 31px;
-  font-size: 17px;
+const ChevronBtn = styled.button`
   background-color: transparent;
   border: none;
+  outline: none;
+  cursor: pointer;
+`;
+
+const ChevronIcon = styled.i`
+  color: white;
+  font-size: 26px;
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const InputContainer = styled.div`
+  width: 49%;
+  height: 16%;
+  max-height: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 15px;
+`;
+
+const ReviewInput = styled.input`
+  width: 92%;
+  height: 44%;
+  font-size: 16px;
+  background-color: transparent;
+  border: solid black 1px;
+  color: white;
+  border-radius: 8px;
+  outline: none;
+`;
+
+const InputBtnContainer = styled.div`
+  width: 92%;
+  height: 35px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+`;
+
+const InputButton = styled.button`
+  background-color: ${props =>
+    props.name === "cancel"
+      ? "rgba(255, 255, 255, 0.3)"
+      : "rgba(0, 0, 0, 0.3)"};
+  width: 18%;
+  margin-left: 13px;
+  border: none;
+  border-radius: 5px;
+  color: white;
   cursor: pointer;
   outline: none;
 `;
 
-const LikeCount = styled.span`
-  font-size: 15px;
-`;
-
-class ReviewPresenter extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLike: null,
-      likeCount: null,
-    };
-  }
-
-  componentDidMount() {
-    const { isMyLike, likeCount } = this.props;
-    this.setState({ isLike: isMyLike ? true : false, likeCount });
-  };
-  
-  handleLikeReview = () => {
-    const { isLike, likeCount } = this.state;
-    const { user: { jwtToken } } = this.props;
-
-    if(!jwtToken) return;
-
-    if (isLike) {
-      this.setState({ isLike: false, likeCount: likeCount - 1 });
-    } else {
-      this.setState({ isLike: true, likeCount: likeCount + 1 });
-    }
-  };
-
-   async componentWillUnmount() {
-    const { isLike } = this.state;
-    const {
-      review: { id },
-      user: { jwtToken },
-      isMyLike
-    } = this.props;
-
-    if(isLike !== isMyLike) {
-      if (isLike) {
-        return await likeReview(id, jwtToken);
-      } else {
-        return await unLikeReview(id, jwtToken);
-      }
-    }
-  }
-
-  render() {
-    const { isLike, likeCount } = this.state;
-    const { review, user: { jwtToken } } = this.props;
-    return (
-      <ReviewContainer>
-        <ReviewBox>
-          <ReviewerName>{review.writer_name}</ReviewerName>
-          <ReviewData>{review.review_data}</ReviewData>
-          <LikeBox>
-            <ReviewIcon onClick={this.handleLikeReview} data-tip={"로그인 해주세요"} place="right">
-              <i className={isLike ? "fas fa-thumbs-up" : "far fa-thumbs-up"}></i>
-            </ReviewIcon>
-            {!jwtToken && <ReactTooltip />}
-            <LikeCount>{likeCount}</LikeCount>
-          </LikeBox>
-        </ReviewBox>
-      </ReviewContainer>
-    );
-  };
-};
+const ReviewPresenter = ({
+  user,
+  reviews,
+  loading,
+  reviewPage,
+  findLikedUser,
+  reviewPageHandler,
+  onChangeReview,
+  inputReviewValue,
+  onReviewCancel,
+  onSubmit,
+}) => (
+  <Container>
+    <Content>
+      test
+    </Content>
+    <ReviewContainer>
+      {loading ? (
+        <LoaderContainer>
+          <span role="img" aria-label="Loading">
+            ⏰
+          </span>
+        </LoaderContainer>
+      ) : reviews && reviews.length > 0 ? (
+        <>
+          <ChevronContainer>
+            <ChevronBtn onClick={() => reviewPageHandler("left")}>
+              <ChevronIcon className="fas fa-chevron-left"></ChevronIcon>
+            </ChevronBtn>
+          </ChevronContainer>
+          <ReviewBox>
+            {reviews
+              .filter(
+                (review, index) =>
+                  index >= (reviewPage - 1) * 6 && index < reviewPage * 6
+              )
+              .map(review => (
+                <Review
+                  user={user}
+                  key={review.id}
+                  review={review}
+                  isMyLike={findLikedUser(review.liked_users_id)}
+                  likeCount={review.liked_users_id.length}
+                />
+              ))}
+          </ReviewBox>
+          <ChevronContainer>
+            <ChevronBtn onClick={() => reviewPageHandler("right")}>
+              <ChevronIcon className="fas fa-chevron-right"></ChevronIcon>
+            </ChevronBtn>
+          </ChevronContainer>
+        </>
+      ) : (
+        <EmptyText>작성된 리뷰가 없습니다.</EmptyText>
+      )}
+      <InputContainer>
+        <ReviewInput
+          value={inputReviewValue}
+          onChange={onChangeReview}
+          placeholder={
+            user && user.jwtToken
+              ? "리뷰를 작성해주세요."
+              : "리뷰를 작성하려면 로그인 해주세요."
+          }
+          disabled={user && user.jwtToken ? false : true}
+        />
+        {inputReviewValue && inputReviewValue.length > 0 && (
+          <InputBtnContainer>
+            <InputButton name="cancel" onClick={onReviewCancel}>
+              취소
+            </InputButton>
+            <InputButton name="confirm" onClick={onSubmit}>
+              확인
+            </InputButton>
+          </InputBtnContainer>
+        )}
+      </InputContainer>
+    </ReviewContainer>
+  </Container>
+);
 
 export default ReviewPresenter;

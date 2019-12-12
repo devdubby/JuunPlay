@@ -29,12 +29,16 @@ const BackDrop = styled.div`
 `;
 
 const Content = styled.div`
-  display: flex;
   width: 79%;
-  position: relative;
+  height: 80%;
+  margin-top: 2%;
   z-index: 1;
-  height: 75%;
-  margin-top: 4%;
+`;
+
+const Information = styled.div`
+  width: 100%;
+  height: 90%;
+  display: flex;
 `;
 
 const Cover = styled.div`
@@ -49,11 +53,6 @@ const Cover = styled.div`
 const Data = styled.div`
   width: 66%;
   margin-left: 25px;
-`;
-
-const InformationDiv = styled.div`
-  height: 91%;
-  min-height: 91%;
 `;
 
 const Title = styled.h3`
@@ -77,8 +76,7 @@ const Overview = styled.p`
   opacity: 0.7;
   line-height: 1.5;
   margin-bottom: 10px;
-  max-height: 16vh;
-  height: 16vh;
+  height: 30%;
 `;
 
 const VideoContainer = styled.div`
@@ -150,49 +148,6 @@ const ReviewContainer = styled.div`
   align-items: center;
 `;
 
-const InputContainer = styled.div`
-  width: 49%;
-  height: 16%;
-  max-height: 15%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-`;
-
-const ReviewInput = styled.input`
-  width: 92%;
-  height: 44%;
-  font-size: 16px;
-  background-color: transparent;
-  border: solid black 1px;
-  color: white;
-  border-radius: 8px;
-  outline: none;
-`;
-
-const InputBtnContainer = styled.div`
-  width: 92%;
-  height: 35px;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 5px;
-`;
-
-const InputButton = styled.button`
-  background-color: ${props =>
-    props.name === "cancel"
-      ? "rgba(255, 255, 255, 0.3)"
-      : "rgba(0, 0, 0, 0.3)"};
-  width: 18%;
-  margin-left: 13px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  outline: none;
-`;
-
 const btnArray = ["기본정보", "리뷰", "관련작품"];
 
 const DetailPresenter = ({
@@ -201,17 +156,11 @@ const DetailPresenter = ({
   error,
   showVideos,
   user,
-  onChangeReview,
-  inputReviewValue,
-  onReviewCancel,
-  onSubmit,
   btnActiveHandler,
-  clickedIndex,
+  tabIndex,
   leftVideoActiveHandler,
   rightVideoActiveHandler,
   activeVideoIndex,
-  leftReviewHandler,
-  rightReviewHandler
 }) =>
   loading ? (
     <Loader />
@@ -221,17 +170,15 @@ const DetailPresenter = ({
         bgImage={`https://image.tmdb.org/t/p/original${result.backdrop_path}`}
       />
       <Content>
-        <Cover
-          bgImage={
-            result.poster_path
-              ? `https://image.tmdb.org/t/p/original${result.poster_path}`
-              : require("../../assets/noPosterSmall.png")
-          }
-        />
-        
-        <Data>
-          {clickedIndex === 0 && 
-          <InformationDiv>
+        {tabIndex === 0 && <Information>
+          <Cover
+            bgImage={
+              result.poster_path
+                ? `https://image.tmdb.org/t/p/original${result.poster_path}`
+                : require("../../assets/noPosterSmall.png")
+            }
+          />
+          <Data>
             <Title>{result.title ? result.title : result.original_title}</Title>
             <ItemContainer>
               <Item>
@@ -284,48 +231,22 @@ const DetailPresenter = ({
                 </ChevronBtn>
               </ChevronContainer>
             </VideoContainer>
-          </InformationDiv>}
-          {clickedIndex === 1 && 
-          <ReviewContainer>
-            <Review />
-            <InputContainer>
-              <ReviewInput
-                value={inputReviewValue}
-                onChange={onChangeReview}
-                placeholder={
-                  user && user.jwtToken
-                    ? "리뷰를 작성해주세요."
-                    : "리뷰를 작성하려면 로그인 해주세요."
-                }
-                disabled={user && user.jwtToken ? false : true}
-              />
-              {inputReviewValue && inputReviewValue.length > 0 && (
-                <InputBtnContainer>
-                  <InputButton name="cancel" onClick={onReviewCancel}>
-                    취소
-                  </InputButton>
-                  <InputButton name="confirm" onClick={onSubmit}>
-                    확인
-                  </InputButton>
-                </InputBtnContainer>
-              )}
-            </InputContainer>
-          </ReviewContainer>}
-          {clickedIndex === 2 && <Works />}
-          <BtnContainer>
-            {btnArray.map((btn, index) => {
-              return (
-                <FooterButton
-                  key={btn + index}
-                  clicked={clickedIndex === index}
-                  onClick={() => btnActiveHandler(index)}
-                >
-                  {btn}
-                </FooterButton>
-              );
-            })}
-          </BtnContainer>
-        </Data>
+          </Data>
+        </Information>}
+        {tabIndex === 1 && <Review />}
+        <BtnContainer>
+          {btnArray.map((btn, index) => {
+            return (
+              <FooterButton
+                key={btn + index}
+                clicked={tabIndex === index}
+                onClick={() => btnActiveHandler(index)}
+              >
+                {btn}
+              </FooterButton>
+            );
+          })}
+        </BtnContainer>
       </Content>
     </Container>
   );

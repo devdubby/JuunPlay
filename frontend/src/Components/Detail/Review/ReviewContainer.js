@@ -3,72 +3,16 @@ import { withRouter } from "react-router-dom";
 import ReviewPresenter from "./ReviewPresenter";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import { getReviews } from "../../../actions";
-import Loader from "../../Loader";
-
-const ReviewMain = styled.div`
-  width: 100%;
-  height: 81%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ReviewBox = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-`;
-
-const LoaderContainer = styled.div`
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 28px;
-  margin-top: 20px;
-`;
-
-const EmptyText = styled.span`
-  font-size: 23px;
-  margin-top: 7vh;
-`;
-
-const ChevronContainer = styled.div`
-  height: 50%;
-  width: 4%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ChevronBtn = styled.button`
-  background-color: transparent;
-  border: none;
-  outline: none;
-  cursor: pointer;
-`;
-
-const ChevronIcon = styled.i`
-  color: white;
-  font-size: 26px;
-  opacity: 0.5;
-  &:hover {
-    opacity: 1;
-  }
-`;
+import { getReviews, inputReview } from "../../../actions";
 
 class ReviewContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       reviews: null,
-      isMyLike: null,
       loading: true,
-      reviewPage: 1
+      reviewPage: 1,
+      inputReviewValue: ''
     };
   }
 
@@ -90,47 +34,10 @@ class ReviewContainer extends Component {
     }
   }
 
-  findLikedUser = (user, liked_users_id) =>
-    liked_users_id.findIndex(element => element === user.id) === -1
-      ? false
-      : true;
-
-  renderReviews = () => {
-    const { reviews, reviewPage } = this.state;
+  findLikedUser = (liked_users_id) => {
     const { user } = this.props;
-
-    return reviews && reviews.length > 0 ? (
-      <>
-        <ChevronContainer>
-          <ChevronBtn onClick={() => this.reviewPageHandler("left")}>
-            <ChevronIcon className="fas fa-chevron-left"></ChevronIcon>
-          </ChevronBtn>
-        </ChevronContainer>
-        <ReviewBox>
-          {reviews
-            .filter(
-              (review, index) => index >= (reviewPage - 1) * 6 && index < reviewPage * 6
-            )
-            .map(review => (
-              <ReviewPresenter
-                user={user}
-                key={review.id}
-                review={review}
-                isMyLike={this.findLikedUser(user, review.liked_users_id)}
-                likeCount={review.liked_users_id.length}
-              />
-            ))}
-        </ReviewBox>
-        <ChevronContainer>
-          <ChevronBtn onClick={() => this.reviewPageHandler("right")}>
-            <ChevronIcon className="fas fa-chevron-right"></ChevronIcon>
-          </ChevronBtn>
-        </ChevronContainer>
-      </>
-    ) : (
-      <EmptyText>작성된 리뷰가 없습니다.</EmptyText>
-    );
-  };
+    return liked_users_id.findIndex(element => element === user.id) === -1 ? false : true;
+  }
 
   reviewPageHandler = (direction) => {
     const { reviews, reviewPage } = this.state;
@@ -141,20 +48,48 @@ class ReviewContainer extends Component {
     }
   };
 
+  onChangeReview = event => {
+    this.setState({ inputReviewValue: event.target.value });
+  };
+
+  onReviewCancel = () => {
+    this.setState({ inputReviewValue: "" });
+  };
+
+  onSubmit = async () => {
+    const { inputReviewValue } = this.state;
+    const {
+      user: { jwtToken },
+      match: {
+        params: { id }
+      }
+    } = this.props;
+    
+    if(!jwtToken) {
+      return alert("먼저 로그인 해주세요");
+    }
+    
+    await inputReview(inputReviewValue, parseInt(id), jwtToken);
+    alert("리뷰가 등록 되었습니다.")
+    window.location.reload();
+  };
+
   render() {
-    const { loading } = this.state;
+    const { reviews, loading, reviewPage, inputReviewValue } = this.state;
+    const { user } = this.props;
     return (
-      <ReviewMain>
-        {loading ? (
-          <LoaderContainer>
-            <span role="img" aria-label="Loading">
-              ⏰
-            </span>
-          </LoaderContainer>
-        ) : (
-          this.renderReviews()
-        )}
-      </ReviewMain>
+      <ReviewPresenter
+        user={user}
+        reviews={reviews}
+        loading={loading}
+        findLikedUser={this.findLikedUser}
+        reviewPageHandler={this.reviewPageHandler}
+        reviewPage={reviewPage}
+        onChangeReview={this.onChangeReview}
+        onReviewCancel={this.onReviewCancel}
+        onSubmit={this.onSubmit}
+        inputReviewValue={inputReviewValue}
+      />
     );
   }
 }
