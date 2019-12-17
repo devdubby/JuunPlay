@@ -19,17 +19,28 @@ class DetailContainer extends Component {
       error: null,
       loading: true,
       isMovie: pathname.includes("/movie/"),
+      paramsID: props.match.params.id,
       showVideos: null,
       tabIndex: 0,
       activeVideoIndex: 0,
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    const { paramsID } = this.state;
+    this.callApi(paramsID);
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    const { match: { params: { id: prevParamsID } } } = prevProps;
+    const { match: { params: { id } } } = this.props;
+    if(prevParamsID !== id) {
+      this.callApi(id);
+    }
+  }
+
+  callApi = async (id) => {
     const {
-      match: {
-        params: { id }
-      },
       history: { push },
       user: { jwtToken }
     } = this.props;
@@ -54,9 +65,9 @@ class DetailContainer extends Component {
     } catch {
       this.setState({ error: "Can't find anything." });
     } finally {
-      this.setState({ loading: false, result, showVideos });
+      this.setState({ loading: false, result, showVideos, tabIndex: 0 });
     }
-  };
+  }
 
   btnActiveHandler = (index) => {
     this.setState({ tabIndex: index });

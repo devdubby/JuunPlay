@@ -3,30 +3,45 @@ import { withRouter } from "react-router-dom";
 import ReviewPresenter from "./ReviewPresenter";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import { getReviews, inputReview } from "../../../actions";
+import { getReviews, inputReview, getMovieCredits, getShowCredits, getCollections } from "../../../actions";
 
 class ReviewContainer extends Component {
   constructor(props) {
     super(props);
+    const {
+      location: { pathname }
+    } = props;
     this.state = {
       reviews: null,
+      credits: null,
       loading: true,
       reviewPage: 1,
-      inputReviewValue: ''
+      inputReviewValue: '',
+      isMovie: pathname.includes("/movie/"),
+      cast: null,
+      crew: null,
+      collections: null,
     };
   }
-
+  
   async componentDidMount() {
+    const { isMovie } = this.state;
     const {
       match: {
         params: { id }
       },
-      user: { jwtToken }
+      user: { jwtToken },
+      collectionsID,
     } = this.props;
     const parsedId = parseInt(id);
     try {
       const { data: reviews } = await getReviews(parsedId, jwtToken);
-      this.setState({ reviews });
+      const collections = collectionsID !== null && await getCollections(collectionsID);
+      const data = isMovie ? await getMovieCredits(parsedId) : await getShowCredits(parsedId);
+      const cast = data.cast.filter((cast, index) => index < 9);
+      const crew = data.crew.filter(crew => crew.job === "Director" || crew.job === "Writer");
+      
+      this.setState({ reviews, credits: { cast, crew }, collections });
     } catch {
       this.setState({ error: "Can't find anything." });
     } finally {
@@ -75,10 +90,12 @@ class ReviewContainer extends Component {
   };
 
   render() {
-    const { reviews, loading, reviewPage, inputReviewValue } = this.state;
+    const { reviews, loading, reviewPage, inputReviewValue, credits, collections } = this.state;
     const { user } = this.props;
+    console.log("this.state", this.state);
     return (
       <ReviewPresenter
+        credits={credits}
         user={user}
         reviews={reviews}
         loading={loading}
@@ -89,6 +106,7 @@ class ReviewContainer extends Component {
         onReviewCancel={this.onReviewCancel}
         onSubmit={this.onSubmit}
         inputReviewValue={inputReviewValue}
+        collections={collections}
       />
     );
   }

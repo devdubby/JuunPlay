@@ -37,12 +37,13 @@ const Content = styled.div`
 
 const Information = styled.div`
   width: 100%;
-  height: 90%;
+  height: 96%;
+  min-height: 96%;
   display: flex;
 `;
 
 const Cover = styled.div`
-  width: 32%;
+  width: 34%;
   background-image: url(${props => props.bgImage});
   background-position: center center;
   background-size: cover;
@@ -138,17 +139,7 @@ const FooterButton = styled.button`
   transition: border-bottom 0.5s ease-in-out;
 `;
 
-const ReviewContainer = styled.div`
-  margin-left: 10px;
-  width: 100%;
-  height: 91%;
-  min-height: 91%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const btnArray = ["기본정보", "리뷰", "관련작품"];
+const btnArray = ["기본정보", "리뷰 / 시리즈", "비슷한 작품"];
 
 const DetailPresenter = ({
   result,
@@ -200,8 +191,6 @@ const DetailPresenter = ({
                       : `${genre.name} / `
                   )}
               </Item>
-              <Divider>•</Divider>
-              <Item>평점 {result.vote_average} / 10.0</Item>
             </ItemContainer>
             <Overview>{result.overview}</Overview>
             <VideoContainer>
@@ -233,7 +222,8 @@ const DetailPresenter = ({
             </VideoContainer>
           </Data>
         </Information>}
-        {tabIndex === 1 && <Review />}
+        {tabIndex === 1 && <Review collectionsID={result.belongs_to_collection && result.belongs_to_collection.id} />}
+        {tabIndex === 2 && <Works />}
         <BtnContainer>
           {btnArray.map((btn, index) => {
             return (

@@ -1,23 +1,23 @@
 import React from "react";
 import styled from "styled-components";
 import Loader from "../../Loader";
+import Works from "./Works";
 
 const WorksContainer = styled.div`
-  height: 91%;
-  min-height: 91%;
+  height: 96%;
+  min-height: 96%;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
 const LoaderContainer = styled.div`
-  height: 100%;
+  height: 96%;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 28px;
-  margin-top: 20px;
 `;
 
 const ChevronContainer = styled.div`
@@ -49,23 +49,37 @@ const WorksItems = styled.div`
   height: 100%;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 `;
 
-const Works = styled.div`
-  width: 30%;
-  height: 48%;
-  background-color: yellow;
-  margin: 5px;
-  border-radius: 5px;
-`;
+const genresObj = [
+  { id: 28, name: "액션" },
+  { id: 12, name: "모험" },
+  { id: 16, name: "애니메이션" },
+  { id: 35, name: "코미디" },
+  { id: 80, name: "범죄" },
+  { id: 99, name: "다큐멘터리" },
+  { id: 18, name: "드라마" },
+  { id: 10751, name: "가족" },
+  { id: 14, name: "판타지" },
+  { id: 36, name: "역사" },
+  { id: 27, name: "공포" },
+  { id: 10402, name: "음악" },
+  { id: 9648, name: "미스터리" },
+  { id: 10749, name: "로맨스" },
+  { id: 878, name: "SF" },
+  { id: 10770, name: "TV 영화" },
+  { id: 53, name: "스릴러" },
+  { id: 10752, name: "전쟁" },
+  { id: 37, name: "서부" }
+];
 
-const Image = styled.div`
-  height: 45%;
-  background-image: url(${props => props.img});
-  background-size: cover;
-`;
+const findGenres = (genre_ids) => {
+  const genres = genresObj.filter((genre, index) => genre_ids.includes(genre.id)).filter((element, index) => index < 3);
+  return genres;
+}
 
-const WorksPresenter = ({ works, loading, error }) => {
+const WorksPresenter = ({ isMovie, works, loading, error, chevronBtnHandler, similarWorksPage }) => {
   return loading ? (
     <LoaderContainer>
       <span role="img" aria-label="Loading">
@@ -75,29 +89,32 @@ const WorksPresenter = ({ works, loading, error }) => {
   ) : (
     <WorksContainer>
       <ChevronContainer>
-        <ChevronBtn>
+        <ChevronBtn onClick={() => chevronBtnHandler("left")}>
           <ChevronIcon className="fas fa-chevron-left"></ChevronIcon>
         </ChevronBtn>
       </ChevronContainer>
       <WorksItems>
         {works.results
-          .filter((works, index) => index < 6)
+          .filter((works, index) => index >= (similarWorksPage - 1) * 6 && index < similarWorksPage * 6)
           .map(works => {
             return (
-              <Works key={works.id}>
-                <Image
-                  img={`https://image.tmdb.org/t/p/w300${works.backdrop_path}`}
-                />
-                {works.title}
-                {works.release_data}
-                {works.vote_average}
-                {works.overview}
-              </Works>
+              <Works
+                key={works.id}
+                isMovie={isMovie}
+                id={works.id}
+                key={works.id}
+                backdropPath={works.backdrop_path}
+                title={works.title}
+                releaseDate={works.release_date}
+                voteAverage={works.vote_average}
+                overview={works.overview}
+                genres={findGenres(works.genre_ids)}
+              />
             );
           })}
       </WorksItems>
       <ChevronContainer>
-        <ChevronBtn>
+        <ChevronBtn onClick={() => chevronBtnHandler("right")}>
           <ChevronIcon className="fas fa-chevron-right"></ChevronIcon>
         </ChevronBtn>
       </ChevronContainer>

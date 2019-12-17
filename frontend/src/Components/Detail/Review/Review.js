@@ -15,7 +15,7 @@ const ReviewContainer = styled.div`
 
 const ReviewBox = styled.div`
   width: 92%;
-  padding: 0px 10px;
+  padding: 13px;
   display: flex;
   flex-direction: column;
   line-height: 32px;

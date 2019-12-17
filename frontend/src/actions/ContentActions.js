@@ -33,6 +33,16 @@ export const getMovieSimilar = async id =>
   .then(res => res.data)
   .catch(err => err.response.data)
 
+export const getMovieCredits = async id => 
+  theMovieApi.get(`movie/${id}/credits`)
+  .then(res => res.data)
+  .catch(err => err.response.data)
+
+export const getCollections = async id => 
+  theMovieApi.get(`collection/${id}`)
+  .then(res => res.data)
+  .catch(err => err.response.data)
+
 export const getShowsTopRated = async () => {
   return await theMovieApi.get("tv/top_rated");
 };
@@ -71,6 +81,11 @@ export const getShowSearch = async term => {
 
 export const getShowSimilar = async id => 
   theMovieApi.get(`tv/${id}/similar`)
+  .then(res => res.data)
+  .catch(err => err.response.data)
+
+export const getShowCredits = async id => 
+  theMovieApi.get(`tv/${id}/credits`)
   .then(res => res.data)
   .catch(err => err.response.data)
 
