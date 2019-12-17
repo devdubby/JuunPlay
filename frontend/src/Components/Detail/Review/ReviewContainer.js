@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import { getReviews, inputReview, getMovieCredits, getShowCredits, getCollections } from "../../../actions";
 
+let timeID = null;
+
 class ReviewContainer extends Component {
   constructor(props) {
     super(props);
@@ -21,6 +23,7 @@ class ReviewContainer extends Component {
       cast: null,
       crew: null,
       collections: null,
+      isScrollEvent: true,
     };
   }
   
@@ -38,14 +41,17 @@ class ReviewContainer extends Component {
       const { data: reviews } = await getReviews(parsedId, jwtToken);
       const collections = collectionsID !== null && await getCollections(collectionsID);
       const data = isMovie ? await getMovieCredits(parsedId) : await getShowCredits(parsedId);
-      const cast = data.cast.filter((cast, index) => index < 9);
-      const crew = data.crew.filter(crew => crew.job === "Director" || crew.job === "Writer");
+      const cast = data.cast.filter((cast, index) => index < 7);
+      const crew = data.crew.filter(crew => crew.job === "Director");
       
       this.setState({ reviews, credits: { cast, crew }, collections });
     } catch {
       this.setState({ error: "Can't find anything." });
     } finally {
       this.setState({ loading: false });
+      setTimeout(() => {
+        this.setState({ isScrollEvent: false });
+      }, 1500);
     }
   }
 
@@ -89,9 +95,21 @@ class ReviewContainer extends Component {
     window.location.reload();
   };
 
+  handleScroll = () => {
+    console.log('handle scroll');
+    clearTimeout(timeID);
+    const { isScrollEvent } = this.state;
+    if(!isScrollEvent) {
+      this.setState({ isScrollEvent: true });
+    }
+    timeID = setTimeout(() => {
+      this.setState({ isScrollEvent: false });
+    }, 1500);
+  }
+
   render() {
-    const { reviews, loading, reviewPage, inputReviewValue, credits, collections } = this.state;
-    const { user } = this.props;
+    const { reviews, loading, reviewPage, inputReviewValue, credits, collections, isScrollEvent } = this.state;
+    const { user, title, voteCount, voteAverage } = this.props;
     console.log("this.state", this.state);
     return (
       <ReviewPresenter
@@ -107,6 +125,11 @@ class ReviewContainer extends Component {
         onSubmit={this.onSubmit}
         inputReviewValue={inputReviewValue}
         collections={collections}
+        title={title}
+        voteCount={voteCount}
+        voteAverage={voteAverage}
+        handleScroll={this.handleScroll}
+        isScrollEvent={isScrollEvent}
       />
     );
   }

@@ -29,8 +29,8 @@ const BackDrop = styled.div`
 `;
 
 const Content = styled.div`
-  width: 79%;
-  height: 80%;
+  width: 81%;
+  height: 82%;
   margin-top: 2%;
   z-index: 1;
 `;
@@ -139,7 +139,7 @@ const FooterButton = styled.button`
   transition: border-bottom 0.5s ease-in-out;
 `;
 
-const btnArray = ["기본정보", "리뷰 / 시리즈", "비슷한 작품"];
+const btnArray = ["기본정보", "상세정보", "비슷한 작품"];
 
 const DetailPresenter = ({
   result,
@@ -151,7 +151,7 @@ const DetailPresenter = ({
   tabIndex,
   leftVideoActiveHandler,
   rightVideoActiveHandler,
-  activeVideoIndex,
+  activeVideoIndex
 }) =>
   loading ? (
     <Loader />
@@ -161,68 +161,82 @@ const DetailPresenter = ({
         bgImage={`https://image.tmdb.org/t/p/original${result.backdrop_path}`}
       />
       <Content>
-        {tabIndex === 0 && <Information>
-          <Cover
-            bgImage={
-              result.poster_path
-                ? `https://image.tmdb.org/t/p/original${result.poster_path}`
-                : require("../../assets/noPosterSmall.png")
+        {tabIndex === 0 && (
+          <Information>
+            <Cover
+              bgImage={
+                result.poster_path
+                  ? `https://image.tmdb.org/t/p/original${result.poster_path}`
+                  : require("../../assets/noPosterSmall.png")
+              }
+            />
+            <Data>
+              <Title>
+                {result.title ? result.title : result.original_title}
+              </Title>
+              <ItemContainer>
+                <Item>
+                  {result.release_date
+                    ? result.release_date.substring(0, 4)
+                    : result.first_air_date.substring(0, 4)}{" "}
+                  년
+                </Item>
+                <Divider>•</Divider>
+                <Item>
+                  {result.runtime ? result.runtime : result.episode_run_time[0]}{" "}
+                  분
+                </Item>
+                <Divider>•</Divider>
+                <Item>
+                  {result.genres &&
+                    result.genres.map((genre, index) =>
+                      index === result.genres.length - 1
+                        ? genre.name
+                        : `${genre.name} / `
+                    )}
+                </Item>
+              </ItemContainer>
+              <Overview>{result.overview}</Overview>
+              <VideoContainer>
+                <ChevronContainer>
+                  <ChevronBtn onClick={leftVideoActiveHandler}>
+                    <ChevronIcon className="fas fa-chevron-left"></ChevronIcon>
+                  </ChevronBtn>
+                </ChevronContainer>
+                <Iframe
+                  id="ytplayer"
+                  type="text/html"
+                  width="65%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${
+                    result.videos.results && result.videos.results.length > 0
+                      ? result.videos.results[activeVideoIndex].key
+                      : showVideos && showVideos.results.length > 0
+                      ? showVideos.results[activeVideoIndex].key
+                      : "NoVideos"
+                  }?origin=${result.homepage}&rel=0`}
+                  frameBorder="0"
+                  allowFullScreen="allowfullscreen"
+                />
+                <ChevronContainer>
+                  <ChevronBtn onClick={rightVideoActiveHandler}>
+                    <ChevronIcon className="fas fa-chevron-right"></ChevronIcon>
+                  </ChevronBtn>
+                </ChevronContainer>
+              </VideoContainer>
+            </Data>
+          </Information>
+        )}
+        {tabIndex === 1 && (
+          <Review
+            title={result.title}
+            voteAverage={result.vote_average}
+            voteCount={result.vote_count}
+            collectionsID={
+              result.belongs_to_collection && result.belongs_to_collection.id
             }
           />
-          <Data>
-            <Title>{result.title ? result.title : result.original_title}</Title>
-            <ItemContainer>
-              <Item>
-                {result.release_date
-                  ? result.release_date.substring(0, 4)
-                  : result.first_air_date.substring(0, 4)}{" "}
-                년
-              </Item>
-              <Divider>•</Divider>
-              <Item>
-                {result.runtime ? result.runtime : result.episode_run_time[0]} 분
-              </Item>
-              <Divider>•</Divider>
-              <Item>
-                {result.genres &&
-                  result.genres.map((genre, index) =>
-                    index === result.genres.length - 1
-                      ? genre.name
-                      : `${genre.name} / `
-                  )}
-              </Item>
-            </ItemContainer>
-            <Overview>{result.overview}</Overview>
-            <VideoContainer>
-              <ChevronContainer>
-                <ChevronBtn onClick={leftVideoActiveHandler}>
-                  <ChevronIcon className="fas fa-chevron-left"></ChevronIcon>
-                </ChevronBtn>
-              </ChevronContainer>
-              <Iframe
-                id="ytplayer"
-                type="text/html"
-                width="65%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${
-                  result.videos.results && result.videos.results.length > 0
-                    ? result.videos.results[activeVideoIndex].key
-                    : showVideos && showVideos.results.length > 0
-                    ? showVideos.results[activeVideoIndex].key
-                    : "NoVideos"
-                }?origin=${result.homepage}&rel=0`}
-                frameBorder="0"
-                allowFullScreen="allowfullscreen"
-              />
-              <ChevronContainer>
-                <ChevronBtn onClick={rightVideoActiveHandler}>
-                  <ChevronIcon className="fas fa-chevron-right"></ChevronIcon>
-                </ChevronBtn>
-              </ChevronContainer>
-            </VideoContainer>
-          </Data>
-        </Information>}
-        {tabIndex === 1 && <Review collectionsID={result.belongs_to_collection && result.belongs_to_collection.id} />}
+        )}
         {tabIndex === 2 && <Works />}
         <BtnContainer>
           {btnArray.map((btn, index) => {
