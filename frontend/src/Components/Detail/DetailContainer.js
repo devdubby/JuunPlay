@@ -5,11 +5,8 @@ import BasicInformation from "./BasicInformation";
 import DetailInformation from "./DetailInformation";
 import SimilarWorks from "./SimilarWorks";
 import Loader from "../Loader";
-import {
-  getMovieDetail,
-  getShowDetail,
-  getShowVideos,
-} from "../../actions";
+import Message from "../Message";
+import { getMovieDetail, getShowDetail, getShowVideos } from "../../actions";
 
 const Container = styled.div`
   height: 100vh;
@@ -107,7 +104,7 @@ class DetailContainer extends Component {
 
   callApi = async id => {
     const {
-      history: { push },
+      history: { push }
     } = this.props;
 
     const { isMovie } = this.state;
@@ -120,13 +117,20 @@ class DetailContainer extends Component {
 
     try {
       if (isMovie) {
-        ({ data: result, data: { videos: { results: videos } } } = await getMovieDetail(parsedId));
+        ({
+          data: result,
+          data: {
+            videos: { results: videos }
+          }
+        } = await getMovieDetail(parsedId));
       } else {
         ({ data: result } = await getShowDetail(parsedId));
-        ({ data: { results: videos } } = await getShowVideos(parsedId));
+        ({
+          data: { results: videos }
+        } = await getShowVideos(parsedId));
       }
     } catch {
-      this.setState({ error: "Can't find anything." });
+      this.setState({ error: "데이터를 찾을 수 없습니다." });
     } finally {
       this.setState({ loading: false, result, videos, tabIndex: 0 });
     }
@@ -160,7 +164,7 @@ class DetailContainer extends Component {
       videos,
       tabIndex,
       activeVideoIndex,
-      isMovie
+      isMovie,
     } = this.state;
     switch (tabIndex) {
       case 0:
@@ -179,7 +183,9 @@ class DetailContainer extends Component {
             title={result.title}
             voteAverage={result.vote_average}
             voteCount={result.vote_count}
-            collectionsID={result.belongs_to_collection && result.belongs_to_collection.parsedId}
+            collectionsID={
+              result.belongs_to_collection && result.belongs_to_collection.id
+            }
           />
         );
       case 2:
@@ -190,30 +196,40 @@ class DetailContainer extends Component {
   };
 
   render() {
-    const { result, tabIndex, loading } = this.state;
+    const { result, tabIndex, loading, error } = this.state;
     return loading ? (
       <Loader />
     ) : (
       <Container>
-        <BackDrop
-          bgImage={`https://image.tmdb.org/t/p/original${result.backdrop_path}`}
-        />
-        <Content>
-          {this.renderComponent()}
-          <BtnContainer>
-            {btnArray.map((btn, index) => {
-              return (
-                <FooterButton
-                  key={btn + index}
-                  clicked={tabIndex === index}
-                  onClick={() => this.btnActiveHandler(index)}
-                >
-                  {btn}
-                </FooterButton>
-              );
-            })}
-          </BtnContainer>
-        </Content>
+        {error ? (
+          <Message color="#ffffff" text={error} />
+        ) : (
+          <>
+            <BackDrop
+              bgImage={
+                result && result.backdrop_path
+                  ? `https://image.tmdb.org/t/p/original${result.backdrop_path}`
+                  : require("../../assets/noBackgroundImg.jpg")
+              }
+            />
+            <Content>
+              {this.renderComponent()}
+              <BtnContainer>
+                {btnArray.map((btn, index) => {
+                  return (
+                    <FooterButton
+                      key={btn + index}
+                      clicked={tabIndex === index}
+                      onClick={() => this.btnActiveHandler(index)}
+                    >
+                      {btn}
+                    </FooterButton>
+                  );
+                })}
+              </BtnContainer>
+            </Content>
+          </>
+        )}
       </Container>
     );
   }

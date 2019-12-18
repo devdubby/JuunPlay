@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import Section from "../Section";
 import Loader from "../Loader";
@@ -58,13 +57,5 @@ const TVPresenter = ({ topRated, popular, airingToday, loading, error }) =>
       {error && <Message color="#e74c3c" text={error} />}
     </Container>
   )
-
-TVPresenter.propTypes = {
-  topRated: PropTypes.array,
-  popular: PropTypes.array,
-  airingToday: PropTypes.array,
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.string
-};
 
 export default TVPresenter;

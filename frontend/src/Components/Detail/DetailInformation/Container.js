@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import Presenter from "./Presenter";
+import Loader from "../../Loader";
 import { connect } from "react-redux";
 import {
   getReviews,
@@ -53,7 +54,7 @@ class Container extends Component {
 
       this.setState({ reviews, credits: { cast, crew }, collections });
     } catch {
-      this.setState({ error: "Can't find anything." });
+      this.setState({ error: "데이터를 찾을 수 없습니다." });
     } finally {
       this.setState({ loading: false });
       setTimeout(() => {
@@ -124,31 +125,32 @@ class Container extends Component {
       credits,
       collections,
       isScrollEvent,
-      isMovie
+      isMovie,
+      error
     } = this.state;
     const { user, title, voteCount, voteAverage } = this.props;
     return (
-      <Presenter
-        credits={credits}
-        user={user}
-        reviews={reviews}
-        loading={loading}
-        findLikedUser={this.findLikedUser}
-        reviewPageHandler={this.reviewPageHandler}
-        reviewPage={reviewPage}
-        onChangeReview={this.onChangeReview}
-        onReviewCancel={this.onReviewCancel}
-        onSubmit={this.onSubmit}
-        inputReviewValue={inputReviewValue}
-        collections={collections}
-        title={title}
-        voteCount={voteCount}
-        voteAverage={voteAverage}
-        handleScroll={this.handleScroll}
-        isScrollEvent={isScrollEvent}
-        isMovie={isMovie}
-      />
-    );
+        <Presenter
+          credits={credits}
+          user={user}
+          reviews={reviews}
+          error={error}
+          loading={loading}
+          findLikedUser={this.findLikedUser}
+          reviewPageHandler={this.reviewPageHandler}
+          reviewPage={reviewPage}
+          onChangeReview={this.onChangeReview}
+          onReviewCancel={this.onReviewCancel}
+          onSubmit={this.onSubmit}
+          inputReviewValue={inputReviewValue}
+          collections={collections}
+          title={title}
+          voteCount={voteCount}
+          voteAverage={voteAverage}
+          handleScroll={this.handleScroll}
+          isScrollEvent={isScrollEvent}
+          isMovie={isMovie}
+        />)
   }
 }
 

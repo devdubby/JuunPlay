@@ -254,6 +254,7 @@ const Presenter = ({
   user,
   reviews,
   loading,
+  error,
   reviewPage,
   findLikedUser,
   reviewPageHandler,

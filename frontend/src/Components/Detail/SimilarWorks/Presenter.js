@@ -52,6 +52,19 @@ const WorksItems = styled.div`
   justify-content: center;
 `;
 
+const EmptyContainer = styled.div`
+  height: 58vh;
+  min-height: 58vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const EmptyText = styled.span`
+  font-size: 23px;
+  margin-top: 7vh;
+`;
+
 const genresObj = [
   { id: 28, name: "액션" },
   { id: 12, name: "모험" },
@@ -94,7 +107,7 @@ const Presenter = ({ isMovie, works, loading, error, chevronBtnHandler, similarW
         </ChevronBtn>
       </ChevronContainer>
       <WorksItems>
-        {works.results
+        {works.results && works.length > 0 ? works.results
           .filter((works, index) => index >= (similarWorksPage - 1) * 6 && index < similarWorksPage * 6)
           .map(works => {
             return (
@@ -110,7 +123,11 @@ const Presenter = ({ isMovie, works, loading, error, chevronBtnHandler, similarW
                 genres={findGenres(works.genre_ids)}
               />
             );
-          })}
+          }) : (
+            <EmptyContainer>
+              <EmptyText>비슷한 작품이 없습니다.</EmptyText>
+            </EmptyContainer>
+          )}
       </WorksItems>
       <ChevronContainer>
         <ChevronBtn onClick={() => chevronBtnHandler("right")}>
