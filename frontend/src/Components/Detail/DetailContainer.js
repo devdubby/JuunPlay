@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { connect } from "react-redux";
 import BasicInformation from "./BasicInformation";
 import DetailInformation from "./DetailInformation";
 import SimilarWorks from "./SimilarWorks";
@@ -60,8 +59,6 @@ const FooterButton = styled.button`
     ${props => (props.clicked ? "#3498db" : "transparent")};
   transition: border-bottom 0.5s ease-in-out;
 `;
-
-const btnArray = ["기본정보", "상세정보", "비슷한 작품"];
 
 class DetailContainer extends Component {
   constructor(props) {
@@ -195,8 +192,29 @@ class DetailContainer extends Component {
     }
   };
 
+  renderBtnContainer = () => {
+    const btnArray = ["기본정보", "상세정보", "비슷한 작품"];
+    const { tabIndex } = this.state;
+
+    return (
+      <BtnContainer>
+        {btnArray.map((btn, index) => {
+          return (
+            <FooterButton
+              key={btn + index}
+              clicked={tabIndex === index}
+              onClick={() => this.btnActiveHandler(index)}
+            >
+              {btn}
+            </FooterButton>
+          );
+        })}
+      </BtnContainer>
+    );
+  };
+
   render() {
-    const { result, tabIndex, loading, error } = this.state;
+    const { result, loading, error } = this.state;
     return loading ? (
       <Loader />
     ) : (
@@ -214,19 +232,7 @@ class DetailContainer extends Component {
             />
             <Content>
               {this.renderComponent()}
-              <BtnContainer>
-                {btnArray.map((btn, index) => {
-                  return (
-                    <FooterButton
-                      key={btn + index}
-                      clicked={tabIndex === index}
-                      onClick={() => this.btnActiveHandler(index)}
-                    >
-                      {btn}
-                    </FooterButton>
-                  );
-                })}
-              </BtnContainer>
+              {this.renderBtnContainer()}
             </Content>
           </>
         )}
@@ -235,11 +241,4 @@ class DetailContainer extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  const { auth } = state;
-  return {
-    user: auth
-  };
-};
-
-export default connect(mapStateToProps, {})(DetailContainer);
+export default DetailContainer;

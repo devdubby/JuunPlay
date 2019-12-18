@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { getMovieSimilar, getShowSimilar } from "../../../actions";
 import Presenter from "./Presenter";
+import Loader from "../../Loader";
 
 class Container extends Component {
   constructor(props) {
@@ -54,11 +55,12 @@ class Container extends Component {
 
   render() {
     const { isMovie, works, loading, error, similarWorksPage } = this.state;
-    return (
+    return loading ? (
+      <Loader />
+    ) : (
       <Presenter
         isMovie={isMovie}
         works={works}
-        loading={loading}
         error={error}
         chevronBtnHandler={this.chevronBtnHandler}
         similarWorksPage={similarWorksPage}

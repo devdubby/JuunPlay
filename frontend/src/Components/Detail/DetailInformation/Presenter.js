@@ -2,6 +2,7 @@ import React from "react";
 import Review from "./Review";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import Message from "../../Message";
 
 const Container = styled.div`
   width: 100%;
@@ -36,16 +37,6 @@ const ReviewBox = styled.div`
   min-height: 58vh;
   display: flex;
   flex-wrap: wrap;
-`;
-
-const LoaderContainer = styled.div`
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 28px;
-  margin-top: 20px;
 `;
 
 const EmptyText = styled.span`
@@ -253,7 +244,6 @@ const CollectionTitle = styled.span`
 const Presenter = ({
   user,
   reviews,
-  loading,
   error,
   reviewPage,
   findLikedUser,
@@ -270,15 +260,11 @@ const Presenter = ({
   handleScroll,
   isScrollEvent,
   isMovie
-}) => (
-  <Container>
-    {loading ? (
-      <LoaderContainer>
-        <span role="img" aria-label="Loading">
-          ⏰
-        </span>
-      </LoaderContainer>
-    ) : (
+}) =>
+    <Container>
+      {error ? (
+        <Message color="#ffffff" text={error} />
+      ) : (
       <>
         {credits && (
           <ContentContainer>
@@ -305,8 +291,8 @@ const Presenter = ({
                 onScroll={handleScroll}
                 isScrollEvent={isScrollEvent}
               >
-                {collections ?
-                  (collections.parts.map(part => (
+                {collections ? (
+                  collections.parts.map(part => (
                     <SeriesContainer key={part.id}>
                       <CollectionTitle>{part.title}</CollectionTitle>
                       <Poster
@@ -314,10 +300,10 @@ const Presenter = ({
                         imgurl={`https://image.tmdb.org/t/p/w300${part.poster_path}`}
                       />
                     </SeriesContainer>
-                  ))) : (
-                    <CollectionTitle>시리즈가 없습니다.</CollectionTitle>
-                  )
-                }
+                  ))
+                ) : (
+                  <CollectionTitle>시리즈가 없습니다.</CollectionTitle>
+                )}
               </CollectionsData>
             </CollectionsContainer>
           </ContentContainer>
@@ -386,9 +372,7 @@ const Presenter = ({
             )}
           </InputContainer>
         </ReviewContainer>
-      </>
-    )}
-  </Container>
-);
+      </>)}
+    </Container>
 
 export default Presenter;

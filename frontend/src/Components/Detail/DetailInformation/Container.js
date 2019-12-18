@@ -45,7 +45,8 @@ class Container extends Component {
     const parsedId = parseInt(id);
     try {
       const { data: reviews } = await getReviews(parsedId, jwtToken);
-      const collections = collectionsID && await getCollections(collectionsID);
+      const collections =
+        collectionsID && (await getCollections(collectionsID));
       const data = isMovie
         ? await getMovieCredits(parsedId)
         : await getShowCredits(parsedId);
@@ -129,28 +130,30 @@ class Container extends Component {
       error
     } = this.state;
     const { user, title, voteCount, voteAverage } = this.props;
-    return (
-        <Presenter
-          credits={credits}
-          user={user}
-          reviews={reviews}
-          error={error}
-          loading={loading}
-          findLikedUser={this.findLikedUser}
-          reviewPageHandler={this.reviewPageHandler}
-          reviewPage={reviewPage}
-          onChangeReview={this.onChangeReview}
-          onReviewCancel={this.onReviewCancel}
-          onSubmit={this.onSubmit}
-          inputReviewValue={inputReviewValue}
-          collections={collections}
-          title={title}
-          voteCount={voteCount}
-          voteAverage={voteAverage}
-          handleScroll={this.handleScroll}
-          isScrollEvent={isScrollEvent}
-          isMovie={isMovie}
-        />)
+    return loading ? (
+      <Loader />
+    ) : (
+      <Presenter
+        credits={credits}
+        user={user}
+        reviews={reviews}
+        error={error}
+        findLikedUser={this.findLikedUser}
+        reviewPageHandler={this.reviewPageHandler}
+        reviewPage={reviewPage}
+        onChangeReview={this.onChangeReview}
+        onReviewCancel={this.onReviewCancel}
+        onSubmit={this.onSubmit}
+        inputReviewValue={inputReviewValue}
+        collections={collections}
+        title={title}
+        voteCount={voteCount}
+        voteAverage={voteAverage}
+        handleScroll={this.handleScroll}
+        isScrollEvent={isScrollEvent}
+        isMovie={isMovie}
+      />
+    );
   }
 }
 
