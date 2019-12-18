@@ -20,13 +20,12 @@ export const getMovieDetail = async id => {
   });
 };
 
-export const getMovieSearch = async term => {
-  return await theMovieApi.get("search/movie", {
+export const getMovieSearch = async term => 
+  await theMovieApi.get("search/movie", {
     params: {
-      query: encodeURIComponent(term)
+      query: term
     }
   });
-};
 
 export const getMovieSimilar = async id => 
   theMovieApi.get(`movie/${id}/similar`)
@@ -74,7 +73,7 @@ export const getShowVideos = async id => {
 export const getShowSearch = async term => {
   return await theMovieApi.get("search/tv", {
     params: {
-      query: encodeURIComponent(term)
+      query: term
     }
   });
 };

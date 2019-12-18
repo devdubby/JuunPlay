@@ -3,7 +3,13 @@ import { withRouter } from "react-router-dom";
 import ReviewPresenter from "./ReviewPresenter";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import { getReviews, inputReview, getMovieCredits, getShowCredits, getCollections } from "../../../actions";
+import {
+  getReviews,
+  inputReview,
+  getMovieCredits,
+  getShowCredits,
+  getCollections
+} from "../../../actions";
 
 let timeID = null;
 
@@ -18,15 +24,15 @@ class ReviewContainer extends Component {
       credits: null,
       loading: true,
       reviewPage: 1,
-      inputReviewValue: '',
+      inputReviewValue: "",
       isMovie: pathname.includes("/movie/"),
       cast: null,
       crew: null,
       collections: null,
-      isScrollEvent: true,
+      isScrollEvent: true
     };
   }
-  
+
   async componentDidMount() {
     const { isMovie } = this.state;
     const {
@@ -34,16 +40,18 @@ class ReviewContainer extends Component {
         params: { id }
       },
       user: { jwtToken },
-      collectionsID,
+      collectionsID
     } = this.props;
     const parsedId = parseInt(id);
     try {
       const { data: reviews } = await getReviews(parsedId, jwtToken);
-      const collections = collectionsID !== null && await getCollections(collectionsID);
-      const data = isMovie ? await getMovieCredits(parsedId) : await getShowCredits(parsedId);
+      const collections = collectionsID && await getCollections(collectionsID);
+      const data = isMovie
+        ? await getMovieCredits(parsedId)
+        : await getShowCredits(parsedId);
       const cast = data.cast.filter((cast, index) => index < 7);
       const crew = data.crew.filter(crew => crew.job === "Director");
-      
+
       this.setState({ reviews, credits: { cast, crew }, collections });
     } catch {
       this.setState({ error: "Can't find anything." });
@@ -55,16 +63,18 @@ class ReviewContainer extends Component {
     }
   }
 
-  findLikedUser = (liked_users_id) => {
+  findLikedUser = liked_users_id => {
     const { user } = this.props;
-    return liked_users_id.findIndex(element => element === user.id) === -1 ? false : true;
-  }
+    return liked_users_id.findIndex(element => element === user.id) === -1
+      ? false
+      : true;
+  };
 
-  reviewPageHandler = (direction) => {
+  reviewPageHandler = direction => {
     const { reviews, reviewPage } = this.state;
-    if(reviewPage - 1 !== 0 && direction === "left") {
+    if (reviewPage - 1 !== 0 && direction === "left") {
       this.setState({ reviewPage: reviewPage - 1 });
-    } else if(reviews.length - 6 * reviewPage > 0 && direction === "right") {
+    } else if (reviews.length - 6 * reviewPage > 0 && direction === "right") {
       this.setState({ reviewPage: reviewPage + 1 });
     }
   };
@@ -85,30 +95,38 @@ class ReviewContainer extends Component {
         params: { id }
       }
     } = this.props;
-    
-    if(!jwtToken) {
+
+    if (!jwtToken) {
       return alert("먼저 로그인 해주세요");
     }
-    
+
     await inputReview(inputReviewValue, parseInt(id), jwtToken);
-    alert("리뷰가 등록 되었습니다.")
+    alert("리뷰가 등록 되었습니다.");
     window.location.reload();
   };
 
   handleScroll = () => {
-    console.log('handle scroll');
     clearTimeout(timeID);
     const { isScrollEvent } = this.state;
-    if(!isScrollEvent) {
+    if (!isScrollEvent) {
       this.setState({ isScrollEvent: true });
     }
     timeID = setTimeout(() => {
       this.setState({ isScrollEvent: false });
     }, 1500);
-  }
+  };
 
   render() {
-    const { reviews, loading, reviewPage, inputReviewValue, credits, collections, isScrollEvent } = this.state;
+    const {
+      reviews,
+      loading,
+      reviewPage,
+      inputReviewValue,
+      credits,
+      collections,
+      isScrollEvent,
+      isMovie
+    } = this.state;
     const { user, title, voteCount, voteAverage } = this.props;
     console.log("this.state", this.state);
     return (
@@ -130,6 +148,7 @@ class ReviewContainer extends Component {
         voteAverage={voteAverage}
         handleScroll={this.handleScroll}
         isScrollEvent={isScrollEvent}
+        isMovie={isMovie}
       />
     );
   }

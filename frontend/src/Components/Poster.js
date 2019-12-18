@@ -46,12 +46,6 @@ const Year = styled.span`
   color: rgba(255, 255, 255, 0.5);
 `;
 
-// const onClick = (jwtToken) => {
-//   if(!jwtToken) {
-//     alert("로그인 먼저 해주세요.");
-//   }
-// }
-
 const Poster = ({ id, imageUrl, title, rating, year, isMovie = false, jwtToken }) => (
   <Link to={isMovie ? `/movie/${id}` : `/show/${id}`}>
     <Container>

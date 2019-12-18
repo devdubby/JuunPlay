@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Review from "./Review";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -29,9 +30,9 @@ const ReviewMain = styled.div`
 `;
 
 const ReviewBox = styled.div`
-  width: 51vw;
+  width: 46vw;
   height: 58vh;
-  min-width: 51vw;
+  min-width: 46vw;
   min-height: 58vh;
   display: flex;
   flex-wrap: wrap;
@@ -84,13 +85,13 @@ const ChevronIcon = styled.i`
   }
 `;
 
-const ReviewDiv = styled.div`
-
-`;
+const ReviewDiv = styled.div``;
 
 const VoteContainer = styled.div`
   width: 100%;
-  padding-left: 40px;
+  padding: 8px 0px 0px 54px;
+  height: 8%;
+  min-height: 8%;
 `;
 
 const VoteText = styled.span`
@@ -110,7 +111,7 @@ const InputContainer = styled.div`
 
 const ReviewInput = styled.input`
   width: 92%;
-  height: 56%;
+  height: 46%;
   font-size: 16px;
   background-color: transparent;
   border: solid black 1px;
@@ -182,7 +183,7 @@ const CreditsData = styled.div`
   overflow: hidden;
 `;
 
-const Poster = styled.div`
+const Poster = styled(Link)`
   background-image: url(${props => props.imgUrl});
   width: 100%;
   height: 100%;
@@ -221,12 +222,14 @@ const CollectionsData = styled.div`
   flex-wrap: wrap;
   &::-webkit-scrollbar {
     width: 12px;
-  };
+  }
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px ${props => props.isScrollEvent ? "black" : "transparent"};
-    background-color: ${props => props.isScrollEvent ? "rgba(255, 255, 255, 0.4)" : "transparent"};
-  };
+    -webkit-box-shadow: inset 0 0 6px
+      ${props => (props.isScrollEvent ? "black" : "transparent")};
+    background-color: ${props =>
+      props.isScrollEvent ? "rgba(255, 255, 255, 0.4)" : "transparent"};
+  }
 `;
 
 const SeriesContainer = styled.div`
@@ -266,7 +269,8 @@ const ReviewPresenter = ({
   voteCount,
   voteAverage,
   handleScroll,
-  isScrollEvent
+  isScrollEvent,
+  isMovie
 }) => (
   <Container>
     {loading ? (
@@ -285,29 +289,43 @@ const ReviewPresenter = ({
             <Content>
               <CreditsData>
                 <Title>감독</Title>
-                {credits.crew.map(crew => <Name key={crew.id}>{crew.name}</Name>)}
+                {credits.crew.map(crew => (
+                  <Name key={crew.id}>{crew.name}</Name>
+                ))}
               </CreditsData>
               <CreditsData>
                 <Title>출연</Title>
-                {credits.cast.map(cast => <Name key={cast.id}>{cast.name}</Name>)}
+                {credits.cast.map(cast => (
+                  <Name key={cast.id}>{cast.name}</Name>
+                ))}
               </CreditsData>
             </Content>
             <CollectionsContainer>
               <Title>시리즈</Title>
-              <CollectionsData onScroll={handleScroll} isScrollEvent={isScrollEvent}>
-                {collections && collections.parts.map(part => 
-                  <SeriesContainer key={part.id}>
-                    <CollectionTitle>{part.title}</CollectionTitle>
-                    <Poster imgUrl={`https://image.tmdb.org/t/p/w300${part.poster_path}`} />
-                  </SeriesContainer>
-                )}
+              <CollectionsData
+                onScroll={handleScroll}
+                isScrollEvent={isScrollEvent}
+              >
+                {collections ?
+                  (collections.parts.map(part => (
+                    <SeriesContainer key={part.id}>
+                      <CollectionTitle>{part.title}</CollectionTitle>
+                      <Poster
+                        to={isMovie ? `/movie/${part.id}` : `/show/${part.id}`}
+                        imgUrl={`https://image.tmdb.org/t/p/w300${part.poster_path}`}
+                      />
+                    </SeriesContainer>
+                  ))) : (
+                    <CollectionTitle>시리즈가 없습니다.</CollectionTitle>
+                  )
+                }
               </CollectionsData>
             </CollectionsContainer>
           </ContentContainer>
         )}
         <ReviewContainer>
           <VoteContainer>
-            <VoteText>평균별점 ⭐️{voteAverage}점 </VoteText>
+            <VoteText>{`평균별점 ⭐️${voteAverage}점 `} </VoteText>
             <VoteText>{voteCount}명</VoteText>
           </VoteContainer>
           <ReviewMain>

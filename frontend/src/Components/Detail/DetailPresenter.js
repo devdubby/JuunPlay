@@ -225,7 +225,7 @@ const DetailPresenter = ({
                 </ChevronContainer>
               </VideoContainer>
             </Data>
-          </Information>
+          </Information>       
         )}
         {tabIndex === 1 && (
           <Review

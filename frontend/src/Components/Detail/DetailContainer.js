@@ -45,8 +45,6 @@ class DetailContainer extends Component {
       user: { jwtToken }
     } = this.props;
 
-    // if(jwtToken === "") return this.props.history.push("/");
-
     const { isMovie } = this.state;
     const parsedId = parseInt(id);
     if (isNaN(parsedId)) {
@@ -94,7 +92,6 @@ class DetailContainer extends Component {
   render() {
     const { result, error, loading, showVideos, tabIndex, activeVideoIndex } = this.state;
     const { user } = this.props;
-    console.log('Detail', this.state);
     return (
       <DetailPresenter
         result={result}
