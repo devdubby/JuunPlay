@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { getMovieSimilar, getShowSimilar } from "../../../actions";
-import WorksPresenter from "./WorksPresenter";
+import Presenter from "./Presenter";
 
-class WorksContainer extends Component {
+class Container extends Component {
   constructor(props) {
     super(props);
     const {
@@ -55,7 +55,7 @@ class WorksContainer extends Component {
   render() {
     const { isMovie, works, loading, error, similarWorksPage } = this.state;
     return (
-      <WorksPresenter
+      <Presenter
         isMovie={isMovie}
         works={works}
         loading={loading}
@@ -67,4 +67,4 @@ class WorksContainer extends Component {
   }
 }
 
-export default withRouter(WorksContainer);
+export default withRouter(Container);

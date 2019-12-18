@@ -1,6 +1,6 @@
+  
 import React from "react";
 import styled from "styled-components";
-import Loader from "../../Loader";
 import Works from "./Works";
 
 const WorksContainer = styled.div`
@@ -79,7 +79,7 @@ const findGenres = (genre_ids) => {
   return genres;
 }
 
-const WorksPresenter = ({ isMovie, works, loading, error, chevronBtnHandler, similarWorksPage }) => {
+const Presenter = ({ isMovie, works, loading, error, chevronBtnHandler, similarWorksPage }) => {
   return loading ? (
     <LoaderContainer>
       <span role="img" aria-label="Loading">
@@ -102,7 +102,6 @@ const WorksPresenter = ({ isMovie, works, loading, error, chevronBtnHandler, sim
                 key={works.id}
                 isMovie={isMovie}
                 id={works.id}
-                key={works.id}
                 backdropPath={works.backdrop_path}
                 title={works.title}
                 releaseDate={works.release_date}
@@ -122,4 +121,4 @@ const WorksPresenter = ({ isMovie, works, loading, error, chevronBtnHandler, sim
   );
 };
 
-export default WorksPresenter;
+export default Presenter;

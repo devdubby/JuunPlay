@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import Review from "./Review";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
@@ -84,8 +84,6 @@ const ChevronIcon = styled.i`
     opacity: 1;
   }
 `;
-
-const ReviewDiv = styled.div``;
 
 const VoteContainer = styled.div`
   width: 100%;
@@ -184,7 +182,7 @@ const CreditsData = styled.div`
 `;
 
 const Poster = styled(Link)`
-  background-image: url(${props => props.imgUrl});
+  background-image: url(${props => props.imgurl});
   width: 100%;
   height: 100%;
   background-size: cover;
@@ -252,7 +250,7 @@ const CollectionTitle = styled.span`
   text-align: center;
 `;
 
-const ReviewPresenter = ({
+const Presenter = ({
   user,
   reviews,
   loading,
@@ -312,7 +310,7 @@ const ReviewPresenter = ({
                       <CollectionTitle>{part.title}</CollectionTitle>
                       <Poster
                         to={isMovie ? `/movie/${part.id}` : `/show/${part.id}`}
-                        imgUrl={`https://image.tmdb.org/t/p/w300${part.poster_path}`}
+                        imgurl={`https://image.tmdb.org/t/p/w300${part.poster_path}`}
                       />
                     </SeriesContainer>
                   ))) : (
@@ -392,4 +390,4 @@ const ReviewPresenter = ({
   </Container>
 );
 
-export default ReviewPresenter;
+export default Presenter;

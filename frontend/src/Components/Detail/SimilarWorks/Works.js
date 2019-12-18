@@ -83,7 +83,12 @@ const Works = ({
                 index === genres.length - 1 ? genre.name : `${genre.name} / `
               )}
           </Data>
-          <Data>⭐️ {voteAverage}/10</Data>
+          <Data>
+            <span role="img" aria-label="rating">
+              ⭐️
+            </span>{" "}
+            {voteAverage}/10
+          </Data>
         </Information>
         <Overview>{overview.substring(0, 90)}...</Overview>
       </TextContainer>

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import ReviewPresenter from "./ReviewPresenter";
-import styled from "styled-components";
+import Presenter from "./Presenter";
 import { connect } from "react-redux";
 import {
   getReviews,
@@ -13,7 +12,7 @@ import {
 
 let timeID = null;
 
-class ReviewContainer extends Component {
+class Container extends Component {
   constructor(props) {
     super(props);
     const {
@@ -128,9 +127,8 @@ class ReviewContainer extends Component {
       isMovie
     } = this.state;
     const { user, title, voteCount, voteAverage } = this.props;
-    console.log("this.state", this.state);
     return (
-      <ReviewPresenter
+      <Presenter
         credits={credits}
         user={user}
         reviews={reviews}
@@ -160,4 +158,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, {})(withRouter(ReviewContainer));
+export default connect(mapStateToProps, {})(withRouter(Container));
