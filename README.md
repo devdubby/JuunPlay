@@ -4,7 +4,7 @@
 
 ## 사용 기술
 
-- React, Redux, Redux-saga, styled-components
+- React, Redux, Redux-thunk, styled-components
 - NodeJS, ExpressJS, Mongoose
 - Movie, TV show data는 'https://www.themoviedb.org/' 의 API 사용
 
