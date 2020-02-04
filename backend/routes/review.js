@@ -19,12 +19,12 @@ router.get("/", (req, res, next) => {
   Review.findAllByContentID(content_id).then(respond);
 });
 
-router.use("/register", authMiddleware);
-router.post("/register", (req, res, next) => {
+router.use("/", authMiddleware);
+router.post("/:id", (req, res, next) => {
   const {
     body: { reviewData },
     decoded: { id, name, email },
-    query: { id: contentID }
+    params: { id: contentID }
   } = req;
   const respond = () => {
     res.json({
@@ -36,8 +36,8 @@ router.post("/register", (req, res, next) => {
   Review.create(id, name, email, contentID, reviewData).then(respond);
 });
 
-router.use("/delete", authMiddleware);
-router.delete("/delete", (req, res, next) => {
+router.use("/", authMiddleware);
+router.delete("/", (req, res, next) => {
   const { id } = req.query;
 
   const respond = () => {

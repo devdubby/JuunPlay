@@ -102,7 +102,7 @@ export const getReviews = (contentID, jwtToken) =>
 
 export const inputReview = (reviewData, contentID, jwtToken) =>
   api.post(
-      `/api/review/register?id=${contentID}`,
+      `/api/review/${contentID}`,
       { reviewData },
       {
         headers: {
@@ -117,7 +117,7 @@ export const inputReview = (reviewData, contentID, jwtToken) =>
 
 export const deleteReview = () => {
   api
-    .post("/api/review/delete")
+    .delete("/api/review")
     .then(res => res.data)
     .catch(err => err.response.data);
 };
