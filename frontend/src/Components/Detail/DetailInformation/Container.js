@@ -101,9 +101,13 @@ class Container extends Component {
       return alert("먼저 로그인 해주세요");
     }
 
-    await inputReview(inputReviewValue, parseInt(id), jwtToken);
-    alert("리뷰가 등록 되었습니다.");
-    window.location.reload();
+    try {
+      await inputReview(inputReviewValue, parseInt(id), jwtToken);
+      const { data: reviews } = await getReviews(parseInt(id), jwtToken);
+      this.setState({ reviews, inputReviewValue: '' });
+    } catch {
+      this.setState({ error: "데이터를 찾을 수 없습니다." });
+    }
   };
 
   handleScroll = () => {
