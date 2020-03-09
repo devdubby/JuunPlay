@@ -11,15 +11,13 @@ const store = createStore(
   applyMiddleware(thunk)
 );
 
-class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <Router />
-        <GloboalStyles />
-      </Provider>
-    );
-  }
+function App() {
+  return (
+    <Provider store={store}>
+      <Router />
+      <GloboalStyles />
+    </Provider>
+  );
 }
 
 export default App;
