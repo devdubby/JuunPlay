@@ -12,21 +12,22 @@ import SignUp from "../Components/SignUp";
 import { checkLoginUser } from "../actions";
 
 function Router() {
-  const jwtToken = useSelector(state => state.auth.jwtToken);
-  const isLogin = jwtToken === "" ? false : true;
   const dispatch = useDispatch();
 
-  const callApi = useCallback(async () => {
+  const callApi = useCallback(async (jwtToken) => {
     await dispatch(checkLoginUser(jwtToken));
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     //login 유효 검사
     const jwtToken = localStorage.getItem("jwtToken");
     if(jwtToken) {
-      callApi();
+      callApi(jwtToken);
     }
   }, [callApi]);
+
+  const jwtToken = useSelector(state => state.auth.jwtToken);
+  const isLogin = jwtToken === "" ? false : true;
 
   return (
     <>
