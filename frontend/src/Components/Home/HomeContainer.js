@@ -16,7 +16,7 @@ function HomeContainer() {
     loading: true
   });
   const { nowPlaying, upcoming, popular, error, loading } = state;
-  const jwtToken = useSelector(state => state.auth.jwtToken, []);
+  const jwtToken = useSelector(state => state.auth.jwtToken);
 
   const callApi = useCallback(async () => {
     try {

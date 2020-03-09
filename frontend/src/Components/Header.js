@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { useCallback } from "react";
 import { Link, withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 
 const HeaderContainer = styled.header`
@@ -59,46 +59,36 @@ const SLink = styled(Link)`
   justify-content: center;
 `;
 
-class Header extends Component {
-  handleLogout = () => {
+function Header({ location: { pathname } }) {
+  const jwtToken = useSelector(state => state.auth.jwtToken);
+
+  const handleLogout = useCallback(() => {
     localStorage.removeItem("jwtToken");
     window.location.reload();
-  };
+  }, []);
 
-  render() {
-    const {
-      location: { pathname },
-      user: { jwtToken }
-    } = this.props;
-    return (
-      <HeaderContainer>
-        <List>
-          <Item current={pathname === "/"}>
-            <SLink to="/">Movies</SLink>
-          </Item>
-          <Item current={pathname === "/tv"}>
-            <SLink to="/tv">TV</SLink>
-          </Item>
-          <Item current={pathname === "/search"}>
-            <SLink to="/search">Search</SLink>
-          </Item>
-        </List>
-        <AuthButtonDiv>
-          {jwtToken ? (
-            <LogoutButton onClick={this.handleLogout}>Logout</LogoutButton>
-          ) : (
-            <SLink to="/login">Login</SLink>
-          )}
-        </AuthButtonDiv>
-      </HeaderContainer>
-    );
-  }
-}
-
-const mapStateToProps = state => {
-  return {
-    user: state.auth
-  };
+  return (
+    <HeaderContainer>
+      <List>
+        <Item current={pathname === "/"}>
+          <SLink to="/">Movies</SLink>
+        </Item>
+        <Item current={pathname === "/tv"}>
+          <SLink to="/tv">TV</SLink>
+        </Item>
+        <Item current={pathname === "/search"}>
+          <SLink to="/search">Search</SLink>
+        </Item>
+      </List>
+      <AuthButtonDiv>
+        {jwtToken ? (
+          <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+        ) : (
+          <SLink to="/login">Login</SLink>
+        )}
+      </AuthButtonDiv>
+    </HeaderContainer>
+  );
 };
 
-export default connect(mapStateToProps, {})(withRouter(Header));
+export default withRouter(Header);
