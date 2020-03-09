@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../actions/AuthActions";
 import LoginPresenter from "./LoginPresenter";
@@ -14,18 +14,18 @@ function LoginContainer({ history }) {
 
   const { email, password, isValidEmail, isValidPassword } = state;
 
-  const onChange = event => {
+  const onChange = useCallback(event => {
     const { value, name } = event.target;
     const isValid = validator(name, value);
-    setState({
+    setState(state => ({
       ...state,
       [name]: value,
       ...isValid
-    });
-  };
+    }));
+  }, []);
 
   const dispatch = useDispatch();
-  const onSubmit = async event => {
+  const onSubmit = useCallback(async event => {
     event.preventDefault();
 
     if (!isValidEmail || !isValidPassword) return;
@@ -35,7 +35,7 @@ function LoginContainer({ history }) {
     if(result.success) {
       return history.push("/");
     }
-  };
+  }, [dispatch, isValidEmail, isValidPassword, email, password, history]);
 
   return (
     <LoginPresenter

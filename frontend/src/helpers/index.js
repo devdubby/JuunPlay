@@ -9,6 +9,5 @@ export const validator = (type, value) => {
       return { isValidName : value && value.length >= 2 }
     default:
       throw new Error("something error!");
-      break;
   };
 }

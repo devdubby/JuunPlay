@@ -113,7 +113,7 @@ const LoginPresenter = ({
 }) => (
   <Container>
     <SubmitForm onSubmit={onSubmit}>
-      <Title>Junflix</Title>
+      <Title>JuunPlay</Title>
       <InputContainer>
         <Input 
           type="text" 

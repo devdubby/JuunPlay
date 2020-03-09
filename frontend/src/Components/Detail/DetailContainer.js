@@ -161,7 +161,6 @@ class DetailContainer extends Component {
       videos,
       tabIndex,
       activeVideoIndex,
-      isMovie,
     } = this.state;
     switch (tabIndex) {
       case 0:

@@ -1,25 +1,24 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import HomePresenter from "./HomePresenter";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   getMoviesNowPlaying,
   getMoviesUpComing,
   getMoviesPopular
 } from "../../actions";
 
-class HomeContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      nowPlaying: null,
-      upcoming: null,
-      popular: null,
-      error: null,
-      loading: true
-    };
-  }
+function HomeContainer() {
+  const [state, setState] = useState({
+    nowPlaying: [],
+    upcoming: [],
+    popular: [],
+    error: null,
+    loading: true
+  });
+  const { nowPlaying, upcoming, popular, error, loading } = state;
+  const jwtToken = useSelector(state => state.auth.jwtToken, []);
 
-  async componentDidMount() {
+  const callApi = useCallback(async () => {
     try {
       const {
         data: { results: nowPlaying }
@@ -31,42 +30,37 @@ class HomeContainer extends Component {
       const {
         data: { results: popular }
       } = await getMoviesPopular();
-      this.setState({
+      setState({
         nowPlaying,
         upcoming,
         popular
       });
     } catch {
-      this.setState({
+      setState({
         error: "Can't find movie information."
       });
     } finally {
-      this.setState({
+      setState(state => ({
+        ...state,
         loading: false
-      });
+      }));
     }
-  }
+  }, []);
 
-  render() {
-    const { nowPlaying, upcoming, popular, error, loading } = this.state;
-    const { user: { jwtToken } } = this.props;
-    return (
-      <HomePresenter
-        nowPlaying={nowPlaying}
-        upcoming={upcoming}
-        popular={popular}
-        error={error}
-        loading={loading}
-        jwtToken={jwtToken}
-      />
-    );
-  }
-}
+  useEffect(() => {
+    callApi();
+  }, [callApi]);
 
-const mapStateToProps = state => {
-  return {
-    user: state.auth
-  };
+  return (
+    <HomePresenter
+      nowPlaying={nowPlaying}
+      upcoming={upcoming}
+      popular={popular}
+      error={error}
+      loading={loading}
+      jwtToken={jwtToken}
+    />
+  );
 };
 
-export default connect(mapStateToProps, {})(HomeContainer);
+export default HomeContainer;
