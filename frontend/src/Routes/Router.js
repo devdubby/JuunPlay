@@ -40,7 +40,6 @@ class Router extends Component {
       </>
     );
   };
-  
 };
 
 

@@ -1,91 +1,55 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import SignUpPresenter from "./SignUpPresenter";
 import { signUpUser } from "../../actions";
-import {
-  emailValidator,
-  passwordValidator,
-  nameValidator
-} from "../../helpers";
+import { validator } from "../../helpers";
 
-class SignUpContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: null,
-      email: null,
-      password: null,
-      isNameValidation: false,
-      isEmailValidation: false,
-      isPasswordValidation: false
-    };
-  }
-  onChange = event => {
-    const {
-      target: { id, value }
-    } = event;
-    switch (id) {
-      case "name":
-        const isNameValidation = nameValidator(value);
-        this.setState({ 
-          name: value, 
-          isNameValidation: isNameValidation 
-        });
-        break;
-      case "email":
-        const isEmailValidation = emailValidator(value);
-        this.setState({ 
-          email: value, 
-          isEmailValidation: isEmailValidation 
-        });
-        break;
-      case "password":
-        const isPasswordValidation = passwordValidator(value);
-        this.setState({
-          password: value,
-          isPasswordValidation: isPasswordValidation
-        });
-        break;
-      default:
-        break;
-    }
+function SignUpContainer({ history }) {
+  const [state, setState] = useState({
+    name: null,
+    email: null,
+    password: null,
+    isValidName: false,
+    isValidEmail: false,
+    isValidPassword: false
+  });
+
+  const { name, email, password, isValidName, isValidEmail, isValidPassword } = state;
+
+  const onChange = event => {
+    const { name, value } = event.target;
+    const isValid = validator(name, value);
+    setState({
+      ...state,
+      [name]: value,
+      ...isValid
+    });
   };
 
-  onSubmit = async event => {
+  const onSubmit = async event => {
     event.preventDefault();
-    const { name, email, password, isNameValidation, isEmailValidation, isPasswordValidation } = this.state;
 
-    if(!isNameValidation || !isEmailValidation || !isPasswordValidation) 
+    if(!isValidName || !isValidEmail || !isValidPassword) 
       return;
 
     const result = await signUpUser(name, email, password);
     alert(result.message);
     if(result.success) {
-      return this.props.history.push("/");
-    }
+      return history.push("/");
+    };
   };
 
-  render() {
-    const {
-      name,
-      email,
-      password,
-      isEmailValidation,
-      isPasswordValidation,
-      isNameValidation
-    } = this.state;
-    return (
-      <SignUpPresenter
-        name={name}
-        email={email}
-        password={password}
-        onChange={this.onChange}
-        onSubmit={this.onSubmit}
-        isNameValidation={isNameValidation}
-        isEmailValidation={isEmailValidation}
-        isPasswordValidation={isPasswordValidation}
-      />
-    );
-  }
+  return (
+    <SignUpPresenter
+      name={name}
+      email={email}
+      password={password}
+      onChange={onChange}
+      onSubmit={onSubmit}
+      isValidName={isValidName}
+      isValidEmail={isValidEmail}
+      isValidPassword={isValidPassword}
+    />
+  );
 }
 
 export default SignUpContainer;

@@ -1,86 +1,52 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../actions/AuthActions";
 import LoginPresenter from "./LoginPresenter";
-import { connect } from "react-redux";
-import { loginUser } from "../../actions";
-import { emailValidator, passwordValidator } from "../../helpers";
+import { validator } from "../../helpers";
 
-class LoginContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: null,
-      password: null,
-      isEmailValidation: false,
-      isPasswordValidation: false
-    };
-  }
+function LoginContainer({ history }) {
+  const [state, setState] = useState({
+    email: "",
+    password: "",
+    isValidEmail: false,
+    isValidPassword: false
+  });
 
-  onChange = event => {
-    const {
-      target: { id, value }
-    } = event;
-    switch (id) {
-      case "email":
-        const isEmailValidation = emailValidator(value);
-        this.setState({ email: value, isEmailValidation: isEmailValidation });
-        break;
-      case "password":
-        const isPasswordValidation = passwordValidator(value);
-        this.setState({
-          password: value,
-          isPasswordValidation: isPasswordValidation
-        });
-        break;
-      default:
-        break;
-    }
+  const { email, password, isValidEmail, isValidPassword } = state;
+
+  const onChange = event => {
+    const { value, name } = event.target;
+    const isValid = validator(name, value);
+    setState({
+      ...state,
+      [name]: value,
+      ...isValid
+    });
   };
 
-  onSubmit = async event => {
+  const dispatch = useDispatch();
+  const onSubmit = async event => {
     event.preventDefault();
-    const {
-      email,
-      password,
-      isEmailValidation,
-      isPasswordValidation
-    } = this.state;
-    const { loginUser } = this.props;
 
-    if (!isEmailValidation || !isPasswordValidation) return;
+    if (!isValidEmail || !isValidPassword) return;
 
-    const result = await loginUser(email, password);
+    const result = await dispatch(loginUser(email, password));
     alert(result.message);
     if(result.success) {
-      return this.props.history.push("/");
+      return history.push("/");
     }
   };
 
-  render() {
-    const {
-      email,
-      password,
-      isEmailValidation,
-      isPasswordValidation
-    } = this.state;
-    return (
-      <LoginPresenter
-        email={email}
-        password={password}
-        onChange={this.onChange}
-        onSubmit={this.onSubmit}
-        isEmailValidation={isEmailValidation}
-        isPasswordValidation={isPasswordValidation}
-      />
-    );
-  }
-}
-
-const mapStateToProps = state => {
-  return {
-    user: state.auth,
-  };
+  return (
+    <LoginPresenter
+      email={email}
+      password={password}
+      onChange={onChange}
+      onSubmit={onSubmit}
+      isValidEmail={isValidEmail}
+      isValidPassword={isValidPassword}
+    />
+  )
 };
 
-export default connect(mapStateToProps, {
-  loginUser
-})(LoginContainer);
+export default LoginContainer;
