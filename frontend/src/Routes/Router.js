@@ -1,6 +1,6 @@
-import React, { useEffect, useCallback } from "react";
+import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import PrivateRoute from "./PrivateRoute";
 import Home from "../Components/Home";
 import Header from "../Components/Header";
@@ -9,23 +9,8 @@ import TV from "../Components/TV";
 import Detail from "../Components/Detail";
 import Login from "../Components/Login"
 import SignUp from "../Components/SignUp";
-import { checkLoginUser } from "../actions";
 
 function Router() {
-  const dispatch = useDispatch();
-
-  const callApi = useCallback(async (jwtToken) => {
-    await dispatch(checkLoginUser(jwtToken));
-  }, [dispatch]);
-
-  useEffect(() => {
-    //login 유효 검사
-    const jwtToken = localStorage.getItem("jwtToken");
-    if(jwtToken) {
-      callApi(jwtToken);
-    }
-  }, [callApi]);
-
   const jwtToken = useSelector(state => state.auth.jwtToken);
   const isLogin = jwtToken === "" ? false : true;
 
