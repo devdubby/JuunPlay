@@ -68,7 +68,7 @@ const Button = styled.button`
   height: 6.5vh;
   position: relative;
   cursor: pointer;
-  opacity: ${props => (props.isEmailValidation && props.isPasswordValidation ? null : 0.3)};
+  opacity: ${props => (props.isValidEmail && props.isValidPassword ? null : 0.3)};
   outline: none;
 `;
 
@@ -92,7 +92,7 @@ const EmailValiIcon = styled.i`
   position: absolute;
   top: 41.4vh;
   right: 41.5vw;
-  color: ${props => (props.isEmailValidation ? "#80d4ff" : "#f92554")};
+  color: ${props => (props.isValidEmail ? "#80d4ff" : "#f92554")};
 `;
 
 const PasswordValiIcon = styled.i`
@@ -100,7 +100,7 @@ const PasswordValiIcon = styled.i`
   position: absolute;
   top: 49.3vh;
   right: 41.5vw;
-  color: ${props => (props.isPasswordValidation ? "#80d4ff" : "#f92554")};
+  color: ${props => (props.isValidPassword ? "#80d4ff" : "#f92554")};
 `;
 
 const LoginPresenter = ({
@@ -108,8 +108,8 @@ const LoginPresenter = ({
   password,
   onChange,
   onSubmit,
-  isEmailValidation,
-  isPasswordValidation
+  isValidEmail,
+  isValidPassword
 }) => (
   <Container>
     <SubmitForm onSubmit={onSubmit}>
@@ -117,15 +117,15 @@ const LoginPresenter = ({
       <InputContainer>
         <Input 
           type="text" 
-          id="email" 
+          name="email" 
           placeholder="Email" 
           onChange={onChange} 
         />
         {email && email.length > 0 && (
           <EmailValiIcon
-            isEmailValidation={isEmailValidation}
+            isValidEmail={isValidEmail}
             className={`far ${
-              isEmailValidation ? "fa-check-circle" : "fa-times-circle"
+              isValidEmail ? "fa-check-circle" : "fa-times-circle"
             }`}
           />
         )}
@@ -133,20 +133,20 @@ const LoginPresenter = ({
       <InputContainer>
         <Input
           type="password"
-          id="password"
+          name="password"
           placeholder="Password"
           onChange={onChange}
         />
         {password && password.length > 0 && (
           <PasswordValiIcon
-            isPasswordValidation={isPasswordValidation}
+            isValidPassword={isValidPassword}
             className={`far ${
-              isPasswordValidation ? "fa-check-circle" : "fa-times-circle"
+              isValidPassword ? "fa-check-circle" : "fa-times-circle"
             }`}
           />
         )}
       </InputContainer>
-      <Button isEmailValidation={isEmailValidation} isPasswordValidation={isPasswordValidation}>로그인</Button>
+      <Button isValidEmail={isValidEmail} isValidPassword={isValidPassword}>로그인</Button>
       <SignUpButton to="/signup">회원가입</SignUpButton>
     </SubmitForm>
   </Container>

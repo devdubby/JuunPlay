@@ -66,7 +66,7 @@ const Button = styled.button`
   height: 6.5vh;
   position: relative;
   cursor: pointer;
-  opacity: ${props => (props.isNameValidation && props.isEmailValidation && props.isPasswordValidation ? null : 0.3)};
+  opacity: ${props => (props.isValidName && props.isValidEmail && props.isValidPassword ? null : 0.3)};
   outline: none;
 `;
 
@@ -75,7 +75,7 @@ const NameValiIcon = styled.i`
   position: absolute;
   top: 40.6vh;
   right: 41.5vw;
-  color: ${props => (props.isNameValidation ? "#80d4ff" : "#f92554")};
+  color: ${props => (props.isValidName ? "#80d4ff" : "#f92554")};
 `;
 
 const EmailValiIcon = styled.i`
@@ -83,7 +83,7 @@ const EmailValiIcon = styled.i`
   position: absolute;
   top: 48.5vh;
   right: 41.5vw;
-  color: ${props => (props.isEmailValidation ? "#80d4ff" : "#f92554")};
+  color: ${props => (props.isValidEmail ? "#80d4ff" : "#f92554")};
 `;
 
 const PasswordValiIcon = styled.i`
@@ -91,7 +91,7 @@ const PasswordValiIcon = styled.i`
   position: absolute;
   top: 56.3vh;
   right: 41.5vw;
-  color: ${props => (props.isPasswordValidation ? "#80d4ff" : "#f92554")};
+  color: ${props => (props.isValidPassword ? "#80d4ff" : "#f92554")};
 `;
 
 const SignUpPresenter = ({
@@ -100,9 +100,9 @@ const SignUpPresenter = ({
   password,
   onChange,
   onSubmit,
-  isEmailValidation,
-  isPasswordValidation,
-  isNameValidation
+  isValidEmail,
+  isValidPassword,
+  isValidName
 }) => (
   <Container>
     <SubmitForm onSubmit={onSubmit}>
@@ -110,27 +110,27 @@ const SignUpPresenter = ({
       <InputContainer>
         <Input
           type="text"
-          id="name"
+          name="name"
           placeholder="Name(2자 이상)"
           onChange={onChange}
           maxLength="20"
         />
         {name && name.length > 0 && (
           <NameValiIcon
-            isNameValidation={isNameValidation}
+            isValidName={isValidName}
             className={`far ${
-              isNameValidation ? "fa-check-circle" : "fa-times-circle"
+              isValidName ? "fa-check-circle" : "fa-times-circle"
             }`}
           />
         )}
       </InputContainer>
       <InputContainer>
-        <Input type="text" id="email" placeholder="Email" onChange={onChange} maxLength="28"/>
+        <Input type="text" name="email" placeholder="Email" onChange={onChange} maxLength="28"/>
         {email && email.length > 0 && (
           <EmailValiIcon
-            isEmailValidation={isEmailValidation}
+            isValidEmail={isValidEmail}
             className={`far ${
-              isEmailValidation ? "fa-check-circle" : "fa-times-circle"
+              isValidEmail ? "fa-check-circle" : "fa-times-circle"
             }`}
           />
         )}
@@ -138,24 +138,24 @@ const SignUpPresenter = ({
       <InputContainer>
         <Input
           type="password"
-          id="password"
+          name="password"
           placeholder="Password(6자 이상)"
           onChange={onChange}
           maxLength="12"
         />
         {password && password.length > 0 && (
           <PasswordValiIcon
-            isPasswordValidation={isPasswordValidation}
+            isValidPassword={isValidPassword}
             className={`far ${
-              isPasswordValidation ? "fa-check-circle" : "fa-times-circle"
+              isValidPassword ? "fa-check-circle" : "fa-times-circle"
             }`}
           />
         )}
       </InputContainer>
       <Button
-        isNameValidation={isNameValidation}
-        isEmailValidation={isEmailValidation}
-        isPasswordValidation={isPasswordValidation}
+        isValidName={isValidName}
+        isValidEmail={isValidEmail}
+        isValidPassword={isValidPassword}
       >
         가입완료
       </Button>
