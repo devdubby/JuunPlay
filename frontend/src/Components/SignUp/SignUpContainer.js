@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { useState, useCallback } from "react";
 import SignUpPresenter from "./SignUpPresenter";
 import { signUpUser } from "../../actions";
 import { validator } from "../../helpers";
@@ -15,17 +15,17 @@ function SignUpContainer({ history }) {
 
   const { name, email, password, isValidName, isValidEmail, isValidPassword } = state;
 
-  const onChange = event => {
+  const onChange = useCallback(event => {
     const { name, value } = event.target;
     const isValid = validator(name, value);
-    setState({
+    setState(state => ({
       ...state,
       [name]: value,
       ...isValid
-    });
-  };
+    }));
+  }, []);
 
-  const onSubmit = async event => {
+  const onSubmit = useCallback(async event => {
     event.preventDefault();
 
     if(!isValidName || !isValidEmail || !isValidPassword) 
@@ -36,7 +36,7 @@ function SignUpContainer({ history }) {
     if(result.success) {
       return history.push("/");
     };
-  };
+  }, [name, email, password, isValidEmail, isValidName, isValidPassword, history]);
 
   return (
     <SignUpPresenter

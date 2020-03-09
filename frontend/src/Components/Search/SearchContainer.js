@@ -1,62 +1,61 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import SearchPresenter from "./SearchPresenter";
 import { getMovieSearch, getShowSearch } from "../../actions";
 
-export default class extends React.Component {
-  state = {
-    movieResults: null,
-    tvResults: null,
+function SearchContainer() {
+  const [state, setState] = useState({
+    movieResults: [],
+    tvResults: [],
     searchTerm: "",
     loading: false,
     error: null
-  };
-
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const { searchTerm } = this.state;
-    if (searchTerm !== "") {
-      this.searchByTerm();
-    }
-  };
-
-  updateTerm = (event) => {
-    const { target: { value } } = event;
-    this.setState({ searchTerm: value });
-  }
-
-  searchByTerm = async () => {
-    const { searchTerm } = this.state;
-    this.setState({ loading: true });
+  });
+  const { movieResults, tvResults, searchTerm, loading, error } = state;
+  
+  const searchByTerm = useCallback(async (searchValue) => {
+    setState(state => ({ ...state , loading: true }));
     try {
       const {
         data: { results: movieResults }
-      } = await getMovieSearch(searchTerm);
+      } = await getMovieSearch(searchValue);
       const {
         data: { results: tvResults }
-      } = await getShowSearch(searchTerm);
-      this.setState({
+      } = await getShowSearch(searchValue);
+      setState(state => ({
+        ...state,
         movieResults,
         tvResults
-      });
+      }));
     } catch {
-      this.setState({ error: "Can't find results." });
+      setState({ error: "Can't find results." });
     } finally {
-      this.setState({ loading: false });
+      setState(state => ({ ...state, loading: false }));
     }
-  };
+  }, []);
 
-  render() {
-    const { movieResults, tvResults, searchTerm, loading, error } = this.state;
-    return (
-      <SearchPresenter
-        movieResults={movieResults}
-        tvResults={tvResults}
-        loading={loading}
-        error={error}
-        searchTerm={searchTerm}
-        handleSubmit={this.handleSubmit}
-        updateTerm={this.updateTerm}
-      />
-    );
-  }
-}
+  const handleSubmit = useCallback(event => {
+    event.preventDefault();
+    if (searchTerm !== "") {
+      searchByTerm(searchTerm);
+    }
+  },[searchByTerm, searchTerm]);
+
+  const onChange = useCallback(event => {
+    const { target: { value } } = event;
+    setState(state => ({ ...state, searchTerm: value }));
+  }, []);
+
+  return (
+    <SearchPresenter
+      movieResults={movieResults}
+      tvResults={tvResults}
+      loading={loading}
+      error={error}
+      searchTerm={searchTerm}
+      handleSubmit={handleSubmit}
+      onChange={onChange}
+    />
+  );
+};
+
+export default SearchContainer;
