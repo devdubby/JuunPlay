@@ -1,170 +1,146 @@
-import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
-import Presenter from "./Presenter";
-import Loader from "../../Loader";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import Presenter from './Presenter';
+import Loader from '../../Loader';
 import {
   getReviews,
   inputReview,
   getMovieCredits,
   getShowCredits,
-  getCollections
-} from "../../../actions";
+  getCollections,
+} from '../../../actions';
 
 let timeID = null;
 
-class Container extends Component {
-  constructor(props) {
-    super(props);
-    const {
-      location: { pathname }
-    } = props;
-    this.state = {
-      reviews: null,
-      credits: null,
-      loading: true,
-      reviewPage: 1,
-      inputReviewValue: "",
-      isMovie: pathname.includes("/movie/"),
-      cast: null,
-      crew: null,
-      collections: null,
-      isScrollEvent: true
-    };
-  }
+function Container({ location, match, collectionsID, title, voteCount, voteAverage }) {
+  const [state, setState] = useState({
+    reviews: null,
+    credits: null,
+    loading: true,
+    reviewPage: 1,
+    inputReviewValue: '',
+    cast: null,
+    crew: null,
+    collections: null,
+    isScrollEvent: true,
+  });
+  const {
+    reviews,
+    loading,
+    reviewPage,
+    inputReviewValue,
+    credits,
+    collections,
+    isScrollEvent,
+    error,
+  } = state;
+  const user = useSelector(state => state.auth);
+  const { jwtToken, id: userId } = user;
 
-  async componentDidMount() {
-    const { isMovie } = this.state;
-    const {
-      match: {
-        params: { id }
-      },
-      user: { jwtToken },
-      collectionsID
-    } = this.props;
-    const parsedId = parseInt(id);
+  const callApi = useCallback(async () => {
+    const parsedId = parseInt(match.params.id);
     try {
       const { data: reviews } = await getReviews(parsedId, jwtToken);
-      const collections =
-        collectionsID && (await getCollections(collectionsID));
-      const data = isMovie
+      const collections = collectionsID && (await getCollections(collectionsID));
+      const data = location.pathname.includes('/movie/')
         ? await getMovieCredits(parsedId)
         : await getShowCredits(parsedId);
       const cast = data.cast.filter((cast, index) => index < 7);
-      const crew = data.crew.filter(crew => crew.job === "Director");
+      const crew = data.crew.filter(crew => crew.job === 'Director');
 
-      this.setState({ reviews, credits: { cast, crew }, collections });
+      setState(state => ({ ...state, reviews, credits: { cast, crew }, collections }));
     } catch {
-      this.setState({ error: "데이터를 찾을 수 없습니다." });
+      setState(state => ({ ...state, error: '데이터를 찾을 수 없습니다.' }));
     } finally {
-      this.setState({ loading: false });
+      setState(state => ({ ...state, loading: false }));
       setTimeout(() => {
-        this.setState({ isScrollEvent: false });
+        setState(state => ({ ...state, isScrollEvent: false }));
       }, 1500);
     }
-  }
+  }, [collectionsID, match.params.id, location.pathname, jwtToken]);
 
-  findLikedUser = liked_users_id => {
-    const { user } = this.props;
-    return liked_users_id.findIndex(element => element === user.id) === -1
-      ? false
-      : true;
-  };
+  useEffect(() => {
+    callApi();
+  }, [callApi]);
 
-  reviewPageHandler = direction => {
-    const { reviews, reviewPage } = this.state;
-    if (reviewPage - 1 !== 0 && direction === "left") {
-      this.setState({ reviewPage: reviewPage - 1 });
-    } else if (reviews.length - 6 * reviewPage > 0 && direction === "right") {
-      this.setState({ reviewPage: reviewPage + 1 });
-    }
-  };
+  const findLikedUser = useCallback(
+    liked_users_id => {
+      return liked_users_id.findIndex(element => element === userId) === -1 ? false : true;
+    },
+    [userId]
+  );
 
-  onChangeReview = event => {
-    this.setState({ inputReviewValue: event.target.value });
-  };
-
-  onReviewCancel = () => {
-    this.setState({ inputReviewValue: "" });
-  };
-
-  onSubmit = async () => {
-    const { inputReviewValue } = this.state;
-    const {
-      user: { jwtToken },
-      match: {
-        params: { id }
+  const reviewPageHandler = useCallback(
+    direction => {
+      if (reviewPage - 1 !== 0 && direction === 'left') {
+        setState({ ...state, reviewPage: reviewPage - 1 });
+      } else if (reviews.length - 6 * reviewPage > 0 && direction === 'right') {
+        setState({ ...state, reviewPage: reviewPage + 1 });
       }
-    } = this.props;
+    },
+    [state, reviews, reviewPage]
+  );
 
+  const onChangeReview = useCallback(
+    event => {
+      setState({ ...state, inputReviewValue: event.target.value });
+    },
+    [state]
+  );
+
+  const onReviewCancel = useCallback(() => {
+    setState({ ...state, inputReviewValue: '' });
+  }, [state]);
+
+  const onSubmit = useCallback(async () => {
     if (!jwtToken) {
-      return alert("먼저 로그인 해주세요");
+      return alert('먼저 로그인 해주세요');
     }
 
     try {
-      await inputReview(inputReviewValue, parseInt(id), jwtToken);
-      const { data: reviews } = await getReviews(parseInt(id), jwtToken);
-      this.setState({ reviews, inputReviewValue: '' });
+      await inputReview(inputReviewValue, parseInt(match.params.id), jwtToken);
+      const { data: reviews } = await getReviews(parseInt(match.params.id), jwtToken);
+      setState({ ...state, reviews, inputReviewValue: '' });
     } catch {
-      this.setState({ error: "데이터를 찾을 수 없습니다." });
+      setState({ ...state, error: '데이터를 찾을 수 없습니다.' });
     }
-  };
+  }, [state, inputReviewValue, match.params.id, jwtToken]);
 
-  handleScroll = () => {
+  const handleScroll = useCallback(() => {
     clearTimeout(timeID);
-    const { isScrollEvent } = this.state;
     if (!isScrollEvent) {
-      this.setState({ isScrollEvent: true });
+      setState({ ...state, isScrollEvent: true });
     }
     timeID = setTimeout(() => {
-      this.setState({ isScrollEvent: false });
+      setState({ ...state, isScrollEvent: false });
     }, 1500);
-  };
+  }, [state, isScrollEvent]);
 
-  render() {
-    const {
-      reviews,
-      loading,
-      reviewPage,
-      inputReviewValue,
-      credits,
-      collections,
-      isScrollEvent,
-      isMovie,
-      error
-    } = this.state;
-    const { user, title, voteCount, voteAverage } = this.props;
-    return loading ? (
-      <Loader />
-    ) : (
-      <Presenter
-        credits={credits}
-        user={user}
-        reviews={reviews}
-        error={error}
-        findLikedUser={this.findLikedUser}
-        reviewPageHandler={this.reviewPageHandler}
-        reviewPage={reviewPage}
-        onChangeReview={this.onChangeReview}
-        onReviewCancel={this.onReviewCancel}
-        onSubmit={this.onSubmit}
-        inputReviewValue={inputReviewValue}
-        collections={collections}
-        title={title}
-        voteCount={voteCount}
-        voteAverage={voteAverage}
-        handleScroll={this.handleScroll}
-        isScrollEvent={isScrollEvent}
-        isMovie={isMovie}
-      />
-    );
-  }
+  return loading ? (
+    <Loader />
+  ) : (
+    <Presenter
+      credits={credits}
+      user={user}
+      reviews={reviews}
+      error={error}
+      findLikedUser={findLikedUser}
+      reviewPageHandler={reviewPageHandler}
+      reviewPage={reviewPage}
+      onChangeReview={onChangeReview}
+      onReviewCancel={onReviewCancel}
+      onSubmit={onSubmit}
+      inputReviewValue={inputReviewValue}
+      collections={collections}
+      title={title}
+      voteCount={voteCount}
+      voteAverage={voteAverage}
+      handleScroll={handleScroll}
+      isScrollEvent={isScrollEvent}
+      isMovie={location.pathname.includes('/movie/')}
+    />
+  );
 }
 
-const mapStateToProps = state => {
-  return {
-    user: state.auth
-  };
-};
-
-export default connect(mapStateToProps, {})(withRouter(Container));
+export default withRouter(Container);

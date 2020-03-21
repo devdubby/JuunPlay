@@ -2,33 +2,32 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
-import reducer from "./reducers";
+import reducer from './reducers';
 import thunk from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import App from './Components/App';
-import { checkLoginUser } from "./actions";
-import "./api";
+import { checkLoginUser } from './actions';
+import './api';
 
-const store = createStore(
-  reducer,
-  applyMiddleware(thunk)
-);
+const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
 async function check() {
   //login 유효 검사
-  const jwtToken = localStorage.getItem("jwtToken");
+  const jwtToken = localStorage.getItem('jwtToken');
   try {
-    if(jwtToken) {
+    if (jwtToken) {
       await store.dispatch(checkLoginUser(jwtToken));
     }
-  } catch(e) {
+  } catch (e) {
     console.log('error', e);
   }
-};
+}
 
 check();
 
 ReactDOM.render(
   <Provider store={store}>
     <App />
-  </Provider>, document.getElementById('root')
+  </Provider>,
+  document.getElementById('root')
 );

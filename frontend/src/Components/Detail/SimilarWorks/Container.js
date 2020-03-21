@@ -1,72 +1,59 @@
-import React, { Component } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { getMovieSimilar, getShowSimilar } from "../../../actions";
 import Presenter from "./Presenter";
 import Loader from "../../Loader";
 
-class Container extends Component {
-  constructor(props) {
-    super(props);
-    const {
-      location: { pathname }
-    } = props;
-    this.state = {
-      works: null,
-      isMovie: pathname.includes("/movie/"),
-      loading: true,
-      error: null,
-      similarWorksPage: 1
-    };
-  }
+function Container ({ location, match }) {
+  const [state, setState] = useState({
+    works: null,
+    isMovie: location.pathname.includes("/movie/"),
+    loading: true,
+    error: null,
+    similarWorksPage: 1
+  });
+  const { isMovie, works, loading, error, similarWorksPage } = state;
 
-  async componentDidMount() {
-    const { isMovie } = this.state;
-    const {
-      match: {
-        params: { id }
-      }
-    } = this.props;
+  const getSimilarWorks = useCallback(async () => {
     try {
       const works = isMovie
-        ? await getMovieSimilar(id)
-        : await getShowSimilar(id);
-      this.setState({ works });
+        ? await getMovieSimilar(match.params.id)
+        : await getShowSimilar(match.params.id);
+      setState(state => ({ ...state, works }));
     } catch {
-      this.setState({ error: "Can't find anything." });
+      setState(state => ({ ...state, error: "Can't find anything." }));
     } finally {
-      this.setState({ loading: false });
+      setState(state => ({ ...state, loading: false }));
     }
-  }
+  }, [isMovie, match.params.id]);
 
-  chevronBtnHandler = direction => {
-    const {
-      works: { results },
-      similarWorksPage
-    } = this.state;
+  useEffect(() => {
+    getSimilarWorks();
+  }, [getSimilarWorks]);
+
+  const chevronBtnHandler = useCallback(direction => {
     if (direction === "left" && similarWorksPage - 1 !== 0) {
-      this.setState({ similarWorksPage: similarWorksPage - 1 });
+      setState({ ...state, similarWorksPage: similarWorksPage - 1 });
     } else if (
-      results.length - 6 * similarWorksPage > 0 &&
+      works.results.length - 6 * similarWorksPage > 0 &&
       direction === "right"
     ) {
-      this.setState({ similarWorksPage: similarWorksPage + 1 });
+      setState({ ...state, similarWorksPage: similarWorksPage + 1 });
     }
-  };
+  }, [state, similarWorksPage, works]);
 
-  render() {
-    const { isMovie, works, loading, error, similarWorksPage } = this.state;
-    return loading ? (
-      <Loader />
-    ) : (
-      <Presenter
-        isMovie={isMovie}
-        works={works}
-        error={error}
-        chevronBtnHandler={this.chevronBtnHandler}
-        similarWorksPage={similarWorksPage}
-      />
-    );
-  }
+
+  return loading ? (
+    <Loader />
+  ) : (
+    <Presenter
+      isMovie={isMovie}
+      works={works}
+      error={error}
+      chevronBtnHandler={chevronBtnHandler}
+      similarWorksPage={similarWorksPage}
+    />
+  );
 }
 
 export default withRouter(Container);

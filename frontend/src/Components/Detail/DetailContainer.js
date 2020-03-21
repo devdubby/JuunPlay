@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import BasicInformation from "./BasicInformation";
 import DetailInformation from "./DetailInformation";
@@ -60,60 +60,28 @@ const FooterButton = styled.button`
   transition: border-bottom 0.5s ease-in-out;
 `;
 
-class DetailContainer extends Component {
-  constructor(props) {
-    super(props);
-    const {
-      location: { pathname }
-    } = props;
-    this.state = {
-      result: null,
-      videos: null,
-      error: null,
-      loading: true,
-      isMovie: pathname.includes("/movie/"),
-      paramsID: props.match.params.id,
-      tabIndex: 0,
-      activeVideoIndex: 0
-    };
-  }
+function DetailContainer({ history, location, match }) {
+  const [state, setState] = useState({
+    result: null,
+    videos: null,
+    error: null,
+    loading: true,
+    tabIndex: 0,
+    activeVideoIndex: 0
+  });
+  
+  const { result, loading, error, activeVideoIndex, videos, tabIndex } = state;
 
-  componentDidMount() {
-    const { paramsID } = this.state;
-    this.callApi(paramsID);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const {
-      match: {
-        params: { id: prevParamsID }
-      }
-    } = prevProps;
-    const {
-      match: {
-        params: { id }
-      }
-    } = this.props;
-    if (prevParamsID !== id) {
-      this.callApi(id);
-    }
-  }
-
-  callApi = async id => {
-    const {
-      history: { push }
-    } = this.props;
-
-    const { isMovie } = this.state;
+  const callApi = useCallback(async id => {
     const parsedId = parseInt(id);
     if (isNaN(parsedId)) {
-      return push("/");
+      return history.push("/");
     }
     let result = null;
     let videos = null;
 
     try {
-      if (isMovie) {
+      if (location.pathname.includes("/movie/")) {
         ({
           data: result,
           data: {
@@ -127,49 +95,45 @@ class DetailContainer extends Component {
         } = await getShowVideos(parsedId));
       }
     } catch {
-      this.setState({ error: "데이터를 찾을 수 없습니다." });
+      setState(state => ({ ...state, error: "데이터를 찾을 수 없습니다." }));
     } finally {
-      this.setState({ loading: false, result, videos, tabIndex: 0 });
+      setState(state => ({ ...state, loading: false, result, videos, tabIndex: 0 }));
     }
-  };
+  }, [history, location.pathname]);
 
-  btnActiveHandler = index => {
-    this.setState({ tabIndex: index });
-  };
+  useEffect(() => {
+    callApi(match.params.id);
+  }, [callApi, match.params.id]);
 
-  leftVideoActiveHandler = () => {
-    const { activeVideoIndex, videos } = this.state;
+  const btnActiveHandler = useCallback(index => {
+    setState({ ...state, tabIndex: index });
+  }, [state]);
+
+  const leftVideoActiveHandler = useCallback(() => {
     if (activeVideoIndex - 1 === -1) {
-      this.setState({ activeVideoIndex: videos.length - 1 });
+      setState({ ...state, activeVideoIndex: videos.length - 1 });
       return;
     }
-    this.setState({ activeVideoIndex: this.state.activeVideoIndex - 1 });
-  };
+    setState({ ...state, activeVideoIndex: activeVideoIndex - 1 });
+  }, [state, activeVideoIndex, videos]);
 
-  rightVideoActiveHandler = () => {
-    const { activeVideoIndex, videos } = this.state;
+  const rightVideoActiveHandler = useCallback(() => {
     if (activeVideoIndex + 1 === videos.length) {
-      this.setState({ activeVideoIndex: 0 });
+      setState({ ...state, activeVideoIndex: 0 });
       return;
     }
-    this.setState({ activeVideoIndex: this.state.activeVideoIndex + 1 });
-  };
+    setState({ ...state, activeVideoIndex: activeVideoIndex + 1 });
+  }, [state, activeVideoIndex, videos]);
 
-  renderComponent = () => {
-    const {
-      result,
-      videos,
-      tabIndex,
-      activeVideoIndex,
-    } = this.state;
+  const renderComponent = useCallback(() => {
     switch (tabIndex) {
       case 0:
         return (
           <BasicInformation
             result={result}
             videos={videos}
-            leftVideoActiveHandler={this.leftVideoActiveHandler}
-            rightVideoActiveHandler={this.rightVideoActiveHandler}
+            leftVideoActiveHandler={leftVideoActiveHandler}
+            rightVideoActiveHandler={rightVideoActiveHandler}
             activeVideoIndex={activeVideoIndex}
           />
         );
@@ -189,11 +153,10 @@ class DetailContainer extends Component {
       default:
         break;
     }
-  };
+  }, [result, videos, tabIndex, activeVideoIndex, leftVideoActiveHandler,rightVideoActiveHandler]);
 
-  renderBtnContainer = () => {
+  const renderBtnContainer = useCallback(() => {
     const btnArray = ["기본정보", "상세정보", "비슷한 작품"];
-    const { tabIndex } = this.state;
 
     return (
       <BtnContainer>
@@ -202,7 +165,7 @@ class DetailContainer extends Component {
             <FooterButton
               key={btn + index}
               clicked={tabIndex === index}
-              onClick={() => this.btnActiveHandler(index)}
+              onClick={() => btnActiveHandler(index)}
             >
               {btn}
             </FooterButton>
@@ -210,34 +173,31 @@ class DetailContainer extends Component {
         })}
       </BtnContainer>
     );
-  };
+  }, [tabIndex, btnActiveHandler]);
 
-  render() {
-    const { result, loading, error } = this.state;
-    return loading ? (
-      <Loader />
-    ) : (
-      <Container>
-        {error ? (
-          <Message color="#ffffff" text={error} />
-        ) : (
-          <>
-            <BackDrop
-              bgImage={
-                result && result.backdrop_path
-                  ? `https://image.tmdb.org/t/p/original${result.backdrop_path}`
-                  : require("../../assets/noBackgroundImg.jpg")
-              }
-            />
-            <Content>
-              {this.renderComponent()}
-              {this.renderBtnContainer()}
-            </Content>
-          </>
-        )}
-      </Container>
-    );
-  }
+  return loading ? (
+    <Loader />
+  ) : (
+    <Container>
+      {error ? (
+        <Message color="#ffffff" text={error} />
+      ) : (
+        <>
+          <BackDrop
+            bgImage={
+              result && result.backdrop_path
+                ? `https://image.tmdb.org/t/p/original${result.backdrop_path}`
+                : require("../../assets/noBackgroundImg.jpg")
+            }
+          />
+          <Content>
+            {renderComponent()}
+            {renderBtnContainer()}
+          </Content>
+        </>
+      )}
+    </Container>
+  );
 }
 
 export default DetailContainer;
