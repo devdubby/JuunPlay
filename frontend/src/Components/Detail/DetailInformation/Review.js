@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
-import ReactTooltip from "react-tooltip";
-import { likeReview, unLikeReview } from "../../../actions";
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import ReactTooltip from 'react-tooltip';
+import { likeReview, unLikeReview } from '../../../actions';
 
 const ReviewContainer = styled.div`
   width: 48%;
@@ -48,53 +47,74 @@ const LikeCount = styled.span`
   font-size: 15px;
 `;
 
-function Review ({ review, isMyLike, likeCount: originCount }) {
-  const [state, setState] = useState({
-    isLike: isMyLike ? true : false,
-    likeCount: originCount
-  });
-  const { isLike, likeCount } = state;
-  const { jwtToken } = useSelector(state => state.auth);
+class Review extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLike: null,
+      likeCount: null,
+    };
+  }
 
-  const likeCallApi = useCallback(async () => {
-    console.log('like call api', isLike, isMyLike);
-    if(!jwtToken) return;
+  componentDidMount() {
+    const { isMyLike, likeCount } = this.props;
+    this.setState({ isLike: isMyLike ? true : false, likeCount });
+  }
 
-    if(isLike !== isMyLike) {
+  handleLikeReview = () => {
+    const { isLike, likeCount } = this.state;
+    const {
+      user: { jwtToken },
+    } = this.props;
+
+    if (!jwtToken) return;
+
+    if (isLike) {
+      this.setState({ isLike: false, likeCount: likeCount - 1 });
+    } else {
+      this.setState({ isLike: true, likeCount: likeCount + 1 });
+    }
+  };
+
+  async componentWillUnmount() {
+    const { isLike } = this.state;
+    const {
+      review: { id },
+      user: { jwtToken },
+      isMyLike,
+    } = this.props;
+
+    if (isLike !== isMyLike) {
       if (isLike) {
-        return await likeReview(review.id, jwtToken);
+        return await likeReview(id, jwtToken);
       } else {
-        return await unLikeReview(review.id, jwtToken);
+        return await unLikeReview(id, jwtToken);
       }
     }
-  }, [isLike, isMyLike, jwtToken, review.id]);
-  
-  useEffect(() => {
-    return () => likeCallApi();
-  }, [likeCallApi]);
+  }
 
-  const handleLikeReview = useCallback(() => {
-    if(!jwtToken) return;
-    setState({ ...state, isLike: isLike ? false : true, likeCount: isLike ? likeCount - 1 : likeCount + 1 });
-  }, [state, isLike, jwtToken, likeCount]);
-
-  console.log('in component', state);
-
-  return (
-    <ReviewContainer>
-      <ReviewBox>
-        <ReviewerName>{review.writer_name}</ReviewerName>
-        <ReviewData>{review.review_data}</ReviewData>
-        <LikeBox>
-          <ReviewIcon onClick={handleLikeReview} data-tip={"로그인 해주세요"} place="right">
-            <i className={isLike ? "fas fa-thumbs-up" : "far fa-thumbs-up"}></i>
-          </ReviewIcon>
-          {!jwtToken && <ReactTooltip />}
-          <LikeCount>{likeCount}</LikeCount>
-        </LikeBox>
-      </ReviewBox>
-    </ReviewContainer>
-  );
-};
+  render() {
+    const { isLike, likeCount } = this.state;
+    const {
+      review,
+      user: { jwtToken },
+    } = this.props;
+    return (
+      <ReviewContainer>
+        <ReviewBox>
+          <ReviewerName>{review.writer_name}</ReviewerName>
+          <ReviewData>{review.review_data}</ReviewData>
+          <LikeBox>
+            <ReviewIcon onClick={this.handleLikeReview} data-tip={'로그인 해주세요'} place="right">
+              <i className={isLike ? 'fas fa-thumbs-up' : 'far fa-thumbs-up'}></i>
+            </ReviewIcon>
+            {!jwtToken && <ReactTooltip />}
+            <LikeCount>{likeCount}</LikeCount>
+          </LikeBox>
+        </ReviewBox>
+      </ReviewContainer>
+    );
+  }
+}
 
 export default Review;
