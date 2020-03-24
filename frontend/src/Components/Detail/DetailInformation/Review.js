@@ -84,13 +84,9 @@ class Review extends Component {
       isMyLike,
     } = this.props;
 
-    if (isLike !== isMyLike) {
-      if (isLike) {
-        return await likeReview(id, jwtToken);
-      } else {
-        return await unLikeReview(id, jwtToken);
-      }
-    }
+    if (!jwtToken || isLike === isMyLike) return;
+
+    isLike ? await likeReview(id, jwtToken) : await unLikeReview(id, jwtToken);
   }
 
   render() {

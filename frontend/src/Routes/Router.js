@@ -25,7 +25,7 @@ function Router() {
           <PrivateRoute path="/signup" isLogin={isLogin} component={SignUp} />
           <Route path="/movie/:id" component={Detail} />
           <Route path="/show/:id" component={Detail} />
-          <Route path="/Search" component={Search} />
+          <Route path="/search" component={Search} />
         </Switch>
       </BrowserRouter>
     </>
